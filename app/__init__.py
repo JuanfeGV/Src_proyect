@@ -5,6 +5,7 @@ from flask import Flask, render_template
 from config import config_por_entorno
 
 from .extensions import csrf, db, login_manager, migrate
+from .utils.imagenes import url_imagen
 
 
 def create_app(entorno=None):
@@ -38,7 +39,7 @@ def create_app(entorno=None):
 
     @app.context_processor
     def variables_globales():
-        return {"nombre_sitio": app.config["NOMBRE_SITIO"]}
+        return {"nombre_sitio": app.config["NOMBRE_SITIO"], "url_imagen": url_imagen}
 
     return app
 
@@ -65,6 +66,7 @@ def _registrar_manejadores_error(app):
     mensajes = {
         403: ("Acceso denegado", "No tienes permiso para ver esta página."),
         404: ("Página no encontrada", "La página que buscas no existe o fue movida."),
+        413: ("Archivo demasiado grande", "Lo que intentaste subir pesa demasiado. El máximo es de 8 MB."),
         500: ("Error del servidor", "Algo salió mal de nuestro lado. Intenta de nuevo en unos minutos."),
     }
 

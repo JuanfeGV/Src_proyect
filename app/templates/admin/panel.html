@@ -17,22 +17,28 @@
     </a>
   </div>
   <div class="col-sm-6 col-xl-4">
-    <div class="tarjeta-agua p-3 h-100">
-      <div class="cifra-panel">{{ total_articulos }}</div>
-      <div class="fw-semibold">Artículos</div>
-    </div>
+    <a class="text-decoration-none" href="{{ url_for('admin.articulos_lista') }}">
+      <div class="tarjeta-agua p-3 h-100">
+        <div class="cifra-panel">{{ total_articulos }}</div>
+        <div class="fw-semibold">Artículos</div>
+      </div>
+    </a>
   </div>
   <div class="col-sm-6 col-xl-4">
-    <div class="tarjeta-agua p-3 h-100">
-      <div class="cifra-panel">{{ total_guias }}</div>
-      <div class="fw-semibold">Guías de consumo</div>
-    </div>
+    <a class="text-decoration-none" href="{{ url_for('admin.guias_lista') }}">
+      <div class="tarjeta-agua p-3 h-100">
+        <div class="cifra-panel">{{ total_guias }}</div>
+        <div class="fw-semibold">Guías de consumo</div>
+      </div>
+    </a>
   </div>
   <div class="col-sm-6 col-xl-4">
-    <div class="tarjeta-agua p-3 h-100">
-      <div class="cifra-panel">{{ total_nodos }}</div>
-      <div class="fw-semibold">Nodos del árbol del problema</div>
-    </div>
+    <a class="text-decoration-none" href="{{ url_for('admin.arbol_lista') }}">
+      <div class="tarjeta-agua p-3 h-100">
+        <div class="cifra-panel">{{ total_nodos }}</div>
+        <div class="fw-semibold">Nodos del árbol del problema</div>
+      </div>
+    </a>
   </div>
 </div>
 {% endblock %}

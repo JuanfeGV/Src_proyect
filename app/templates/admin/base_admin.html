@@ -12,9 +12,12 @@
       <a class="list-group-item {{ 'active' if ep == 'admin.panel' }}" href="{{ url_for('admin.panel') }}">Resumen</a>
       <a class="list-group-item {{ 'active' if ep.startswith('admin.municipio') or ep.startswith('admin.indicador') }}"
          href="{{ url_for('admin.municipios_lista') }}">Municipios</a>
-      <span class="list-group-item disabled">Artículos (próximamente)</span>
-      <span class="list-group-item disabled">Guías de consumo (próximamente)</span>
-      <span class="list-group-item disabled">Árbol del problema (próximamente)</span>
+      <a class="list-group-item {{ 'active' if ep.startswith('admin.articulo') }}"
+         href="{{ url_for('admin.articulos_lista') }}">Artículos</a>
+      <a class="list-group-item {{ 'active' if ep.startswith('admin.guia') }}"
+         href="{{ url_for('admin.guias_lista') }}">Guías de consumo</a>
+      <a class="list-group-item {{ 'active' if ep.startswith('admin.arbol') or ep.startswith('admin.nodo') }}"
+         href="{{ url_for('admin.arbol_lista') }}">Árbol del problema</a>
     </nav>
   </aside>
   <section class="col-lg-9">

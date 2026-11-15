@@ -21,7 +21,7 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "clave-solo-para-desarrollo")
     SQLALCHEMY_DATABASE_URI = _url_base_de_datos()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # 2 MB máximo por archivo subido
+    MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MB máximo por subida (las imágenes se reducen al guardarlas)
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE") == "1"

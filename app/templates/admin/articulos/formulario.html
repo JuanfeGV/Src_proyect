@@ -1,0 +1,36 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/formularios.html" import campo %}
+
+{% block titulo %}{{ "Editar artículo" if articulo else "Nuevo artículo" }} · Panel{% endblock %}
+
+{% block panel %}
+<h1 class="h4 mb-3">{{ "Editar artículo" if articulo else "Nuevo artículo" }}</h1>
+
+<div class="tarjeta-agua p-4">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {{ form.hidden_tag() }}
+    {{ campo(form.titulo) }}
+    {{ campo(form.resumen, ayuda="Máximo 300 caracteres. Se muestra en las tarjetas de noticias.") }}
+    {{ campo(form.contenido, filas=10, ayuda="Separa los párrafos con una línea en blanco.") }}
+    <div class="row">
+      <div class="col-md-6">{{ campo(form.categoria) }}</div>
+      <div class="col-md-6">{{ campo(form.municipio_id) }}</div>
+    </div>
+
+    {% if articulo and articulo.imagen %}
+    <div class="mb-3">
+      <div class="form-label fw-semibold">Imagen actual</div>
+      <img class="vista-previa-admin" src="{{ url_imagen(articulo.imagen, miniatura=True) }}" alt="Imagen actual del artículo">
+    </div>
+    {{ campo(form.quitar_imagen) }}
+    {% endif %}
+    {{ campo(form.imagen, ayuda="JPG, PNG o WebP. Se reduce automáticamente para que la página cargue rápido.") }}
+
+    {{ campo(form.publicado) }}
+    <div class="d-flex gap-2">
+      {{ form.enviar(class="btn btn-agua") }}
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.articulos_lista') }}">Volver</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

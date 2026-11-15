@@ -27,6 +27,7 @@ class NodoArbol(BuscableMixin, db.Model):
         backref=db.backref("padre", remote_side=[id]),
         order_by="NodoArbol.orden",
     )
+    
 
     def __repr__(self):
         return f"<Nodo {self.tipo}: {self.titulo[:30]}>"

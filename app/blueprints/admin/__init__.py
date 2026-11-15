@@ -15,4 +15,4 @@ def proteger_panel():
         abort(403)
 
 
-from . import municipios, routes  # noqa: E402,F401
+from . import arbol, articulos, guias, municipios, routes  # noqa: E402,F401

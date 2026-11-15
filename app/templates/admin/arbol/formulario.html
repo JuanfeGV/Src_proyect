@@ -1,0 +1,26 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/formularios.html" import campo %}
+
+{% block titulo %}{{ "Editar nodo" if nodo else "Nuevo nodo" }} · Panel{% endblock %}
+
+{% block panel %}
+<h1 class="h4 mb-3">{{ "Editar nodo" if nodo else "Nuevo nodo" }}</h1>
+
+<div class="tarjeta-agua p-4">
+  <form method="post" novalidate>
+    {{ form.hidden_tag() }}
+    {{ campo(form.tipo, ayuda="Los efectos y causas directos cuelgan del problema central de forma automática.") }}
+    {{ campo(form.padre_id, ayuda="Solo para efectos indirectos (elige un efecto directo) y causas indirectas (elige una causa directa).") }}
+    {{ campo(form.titulo) }}
+    {{ campo(form.descripcion, filas=5, ayuda="Opcional. Se muestra al tocar el nodo en el árbol interactivo.") }}
+    <div class="row">
+      <div class="col-md-8">{{ campo(form.fuente, ayuda="Ej.: Págs. 175, 196 del informe.") }}</div>
+      <div class="col-md-4">{{ campo(form.orden, ayuda="Los menores van primero.") }}</div>
+    </div>
+    <div class="d-flex gap-2">
+      {{ form.enviar(class="btn btn-agua") }}
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.arbol_lista') }}">Volver</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

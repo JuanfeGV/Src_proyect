@@ -1,0 +1,56 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/insignias.html" import nivel_riesgo %}
+
+{% block titulo %}Guías de consumo · Panel{% endblock %}
+
+{% block panel %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Guías de consumo responsable</h1>
+  <a class="btn btn-agua" href="{{ url_for('admin.guia_nueva') }}">Nueva guía</a>
+</div>
+
+<div class="tarjeta-agua">
+  <div class="table-responsive">
+    <table class="table table-admin align-middle mb-0">
+      <thead>
+        <tr><th></th><th>Orden</th><th>Título</th><th>Aplica a</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for g in guias %}
+        <tr>
+          <td style="width: 64px;">
+            {% if g.imagen %}
+            <img class="miniatura-admin" src="{{ url_imagen(g.imagen, miniatura=True) }}" alt="">
+            {% else %}
+            <div class="miniatura-admin miniatura-vacia"></div>
+            {% endif %}
+          </td>
+          <td>{{ g.orden }}</td>
+          <td class="fw-semibold">{{ g.titulo }}</td>
+          <td>
+            {% if g.nivel_riesgo == "todos" %}<span class="badge text-bg-info">Todos los niveles</span>
+            {% else %}{{ nivel_riesgo(g.nivel_riesgo) }}{% endif %}
+          </td>
+          <td>
+            {% if g.publicada %}<span class="badge text-bg-success">Publicada</span>
+            {% else %}<span class="badge text-bg-secondary">Oculta</span>{% endif %}
+          </td>
+          <td class="text-end text-nowrap">
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.guia_editar', guia_id=g.id) }}">Editar</a>
+            <form method="post" class="d-inline"
+                  action="{{ url_for('admin.guia_eliminar', guia_id=g.id) }}"
+                  data-mensaje="¿Eliminar la guía {{ g.titulo }}?"
+                  onsubmit="return confirm(this.dataset.mensaje)">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">Aún no hay guías.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/paginacion.html" import botones_pagina %}
+
+{% block titulo %}Artículos · Panel{% endblock %}
+
+{% block panel %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Artículos y noticias</h1>
+  <a class="btn btn-agua" href="{{ url_for('admin.articulo_nuevo') }}">Nuevo artículo</a>
+</div>
+
+<div class="tarjeta-agua">
+  <div class="table-responsive">
+    <table class="table table-admin align-middle mb-0">
+      <thead>
+        <tr><th></th><th>Título</th><th>Categoría</th><th>Estado</th><th>Municipio</th><th>Publicado</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for a in paginacion.items %}
+        <tr>
+          <td style="width: 64px;">
+            {% if a.imagen %}
+            <img class="miniatura-admin" src="{{ url_imagen(a.imagen, miniatura=True) }}" alt="">
+            {% else %}
+            <div class="miniatura-admin miniatura-vacia"></div>
+            {% endif %}
+          </td>
+          <td class="fw-semibold">{{ a.titulo }}</td>
+          <td>{{ "Noticia" if a.categoria == "noticia" else "Artículo" }}</td>
+          <td>
+            {% if a.publicado %}<span class="badge text-bg-success">Publicado</span>
+            {% else %}<span class="badge text-bg-secondary">Borrador</span>{% endif %}
+          </td>
+          <td>{{ a.municipio.nombre if a.municipio else "Toda la región" }}</td>
+          <td>{{ a.fecha_publicacion.strftime("%d/%m/%Y") if a.fecha_publicacion else "—" }}</td>
+          <td class="text-end text-nowrap">
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.articulo_editar', articulo_id=a.id) }}">Editar</a>
+            <form method="post" class="d-inline"
+                  action="{{ url_for('admin.articulo_eliminar', articulo_id=a.id) }}"
+                  data-mensaje="¿Eliminar el artículo {{ a.titulo }}?"
+                  onsubmit="return confirm(this.dataset.mensaje)">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">Aún no hay artículos.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{{ botones_pagina(paginacion, 'admin.articulos_lista') }}
+{% endblock %}

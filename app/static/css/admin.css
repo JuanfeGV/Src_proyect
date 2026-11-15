@@ -20,3 +20,15 @@
 }
 
 .cifra-panel { font-size: 2rem; font-weight: 700; color: var(--azul-oscuro); line-height: 1; }
+
+.miniatura-admin {
+  width: 56px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+.miniatura-vacia { background: #cfe3ef; }
+.vista-previa-admin { max-width: 220px; border-radius: 12px; display: block; }
+
+.nodo-hijo { padding-left: 2.5rem; background: rgba(255, 255, 255, 0.55); }

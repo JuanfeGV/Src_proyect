@@ -1,0 +1,65 @@
+{% extends "admin/base_admin.html" %}
+
+{% macro fila(nodo, sangria=False) %}
+<li class="list-group-item d-flex justify-content-between align-items-start gap-3 {{ 'nodo-hijo' if sangria }}">
+  <div>
+    <div class="fw-semibold">{{ nodo.titulo }}</div>
+    <div class="small text-muted">
+      {% if nodo.fuente %}Fuente: {{ nodo.fuente }}{% else %}Sin fuente{% endif %}
+      · {{ "Con descripción" if nodo.descripcion else "Sin descripción" }}
+    </div>
+  </div>
+  <div class="text-nowrap">
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.nodo_editar', nodo_id=nodo.id) }}">Editar</a>
+    <form method="post" class="d-inline"
+          action="{{ url_for('admin.nodo_eliminar', nodo_id=nodo.id) }}"
+          data-mensaje="¿Eliminar este nodo del árbol?"
+          onsubmit="return confirm(this.dataset.mensaje)">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+    </form>
+  </div>
+</li>
+{% endmacro %}
+
+{% block titulo %}Árbol del problema · Panel{% endblock %}
+
+{% block panel %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Árbol del problema</h1>
+  <a class="btn btn-agua" href="{{ url_for('admin.nodo_nuevo') }}">Nuevo nodo</a>
+</div>
+
+<h2 class="h6 text-uppercase text-muted">Problema central</h2>
+<ul class="list-group tarjeta-agua mb-4">
+  {% if central %}{{ fila(central) }}
+  {% else %}<li class="list-group-item text-muted">Aún no hay problema central.</li>{% endif %}
+</ul>
+
+<h2 class="h6 text-uppercase text-muted">Efectos</h2>
+<ul class="list-group tarjeta-agua mb-4">
+  {% for efecto in efectos %}
+    {{ fila(efecto) }}
+    {% for hijo in efecto.hijos %}{{ fila(hijo, sangria=True) }}{% endfor %}
+  {% else %}
+    <li class="list-group-item text-muted">Aún no hay efectos.</li>
+  {% endfor %}
+</ul>
+
+<h2 class="h6 text-uppercase text-muted">Causas</h2>
+<ul class="list-group tarjeta-agua mb-4">
+  {% for causa in causas %}
+    {{ fila(causa) }}
+    {% for hijo in causa.hijos %}{{ fila(hijo, sangria=True) }}{% endfor %}
+  {% else %}
+    <li class="list-group-item text-muted">Aún no hay causas.</li>
+  {% endfor %}
+</ul>
+
+{% if sin_ubicar %}
+<h2 class="h6 text-uppercase text-danger">Nodos sin ubicar</h2>
+<ul class="list-group tarjeta-agua">
+  {% for nodo in sin_ubicar %}{{ fila(nodo) }}{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
