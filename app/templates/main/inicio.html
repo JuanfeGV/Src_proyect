@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <section class="tarjeta-agua h-100">
+      <div class="tarjeta-agua-encabezado">Crisis hídrica: causas y conciencia</div>
+      <div class="p-4">
+        <h1 class="h4">Árbol del problema hídrico</h1>
+        <p class="mb-0">Aquí irá el árbol del problema interactivo (Fase 5).</p>
+      </div>
+    </section>
+  </div>
+  <div class="col-lg-4">
+    {% include "reportes/_widget.html" %}
+  </div>
+</div>
+{% endblock %}

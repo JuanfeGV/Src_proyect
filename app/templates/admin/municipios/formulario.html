@@ -1,0 +1,65 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/formularios.html" import campo %}
+
+{% block titulo %}{{ "Editar municipio" if municipio else "Nuevo municipio" }} · Panel{% endblock %}
+
+{% block panel %}
+<h1 class="h4 mb-3">{{ "Editar municipio" if municipio else "Nuevo municipio" }}</h1>
+
+<div class="tarjeta-agua p-4 mb-4">
+  <form method="post" novalidate>
+    {{ form.hidden_tag() }}
+    {{ campo(form.nombre) }}
+    <div class="row">
+      <div class="col-md-6">{{ campo(form.latitud, ayuda="Ej.: 4.9186 (sirve punto o coma).") }}</div>
+      <div class="col-md-6">{{ campo(form.longitud, ayuda="Ej.: -74.0277") }}</div>
+    </div>
+    {{ campo(form.nivel_riesgo, ayuda="Define qué guías de consumo se recomiendan en este municipio.") }}
+    {{ campo(form.estado_suministro, ayuda="Ej.: Normal, Racionamiento programado.") }}
+    {{ campo(form.resumen, filas=4) }}
+    {{ campo(form.recomendaciones, filas=5, ayuda="Se muestran en la ficha pública del municipio.") }}
+    <div class="d-flex gap-2">
+      {{ form.enviar(class="btn btn-agua") }}
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.municipios_lista') }}">Volver</a>
+    </div>
+  </form>
+</div>
+
+{% if municipio %}
+<div class="tarjeta-agua">
+  <div class="tarjeta-agua-encabezado d-flex justify-content-between align-items-center">
+    <span>Indicadores de {{ municipio.nombre }}</span>
+    <a class="btn btn-sm btn-light" href="{{ url_for('admin.indicador_nuevo', municipio_id=municipio.id) }}">Agregar indicador</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr><th>Indicador</th><th>Valor</th><th>Periodo</th><th>Fuente</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for i in municipio.indicadores %}
+        <tr>
+          <td class="fw-semibold">{{ i.nombre }}</td>
+          <td>{{ i.valor }}{% if i.unidad %} {{ i.unidad }}{% endif %}</td>
+          <td>{{ i.periodo or "—" }}</td>
+          <td>{{ i.fuente or "—" }}</td>
+          <td class="text-end text-nowrap">
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.indicador_editar', indicador_id=i.id) }}">Editar</a>
+            <form method="post" class="d-inline"
+                  action="{{ url_for('admin.indicador_eliminar', indicador_id=i.id) }}"
+                  data-mensaje="¿Eliminar el indicador {{ i.nombre }}?"
+                  onsubmit="return confirm(this.dataset.mensaje)">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-4">Este municipio aún no tiene indicadores.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

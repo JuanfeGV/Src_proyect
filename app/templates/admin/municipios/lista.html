@@ -1,0 +1,51 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/insignias.html" import nivel_riesgo %}
+
+{% block titulo %}Municipios · Panel{% endblock %}
+
+{% block panel %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Municipios</h1>
+  <a class="btn btn-agua" href="{{ url_for('admin.municipio_nuevo') }}">Nuevo municipio</a>
+</div>
+
+<div class="tarjeta-agua">
+  <div class="table-responsive">
+    <table class="table table-admin align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Municipio</th>
+          <th>Riesgo</th>
+          <th>Suministro</th>
+          <th>Indicadores</th>
+          <th>Actualizado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in municipios %}
+        <tr>
+          <td class="fw-semibold">{{ m.nombre }}</td>
+          <td>{{ nivel_riesgo(m.nivel_riesgo) }}</td>
+          <td>{{ m.estado_suministro or "—" }}</td>
+          <td>{{ m.indicadores | length }}</td>
+          <td>{{ m.actualizado_en.strftime("%d/%m/%Y") }}</td>
+          <td class="text-end text-nowrap">
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.municipio_editar', municipio_id=m.id) }}">Editar</a>
+            <form method="post" class="d-inline"
+                  action="{{ url_for('admin.municipio_eliminar', municipio_id=m.id) }}"
+                  data-mensaje="¿Eliminar el municipio {{ m.nombre }} y todos sus indicadores?"
+                  onsubmit="return confirm(this.dataset.mensaje)">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">Aún no hay municipios.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/formularios.html" import campo %}
+
+{% block titulo %}{{ "Editar indicador" if indicador else "Nuevo indicador" }} · Panel{% endblock %}
+
+{% block panel %}
+<h1 class="h4 mb-1">{{ "Editar indicador" if indicador else "Nuevo indicador" }}</h1>
+<p class="text-muted">Municipio: {{ municipio.nombre }}</p>
+
+<div class="tarjeta-agua p-4">
+  <form method="post" novalidate>
+    {{ form.hidden_tag() }}
+    {{ campo(form.nombre, ayuda="Ej.: Cobertura de acueducto, IRCA, ICA.") }}
+    <div class="row">
+      <div class="col-md-6">{{ campo(form.valor, ayuda="Ej.: 98,9 o Malo.") }}</div>
+      <div class="col-md-6">{{ campo(form.unidad, ayuda="Ej.: %") }}</div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">{{ campo(form.periodo, ayuda="Ej.: 2025") }}</div>
+      <div class="col-md-6">{{ campo(form.orden, ayuda="Los números menores se muestran primero.") }}</div>
+    </div>
+    {{ campo(form.fuente, ayuda="De dónde sale el dato (informe, entidad, página).") }}
+    <div class="d-flex gap-2">
+      {{ form.enviar(class="btn btn-agua") }}
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.municipio_editar', municipio_id=municipio.id) }}">Volver</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

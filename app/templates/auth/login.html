@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "components/formularios.html" import campo %}
+
+{% block titulo %}Ingresar{% endblock %}
+
+{% block contenido %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-5">
+    <section class="tarjeta-agua">
+      <div class="tarjeta-agua-encabezado">Acceso administrador</div>
+      <div class="p-4">
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+          {{ campo(form.email) }}
+          {{ campo(form.password) }}
+          {{ campo(form.recordar) }}
+          {{ form.enviar(class="btn btn-agua w-100") }}
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

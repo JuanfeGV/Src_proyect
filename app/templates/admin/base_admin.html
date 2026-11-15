@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block contenido %}
+{% set ep = request.endpoint or '' %}
+<div class="row g-4">
+  <aside class="col-lg-3">
+    <nav class="list-group panel-lateral" aria-label="Menú del panel">
+      <a class="list-group-item {{ 'active' if ep == 'admin.panel' }}" href="{{ url_for('admin.panel') }}">Resumen</a>
+      <a class="list-group-item {{ 'active' if ep.startswith('admin.municipio') or ep.startswith('admin.indicador') }}"
+         href="{{ url_for('admin.municipios_lista') }}">Municipios</a>
+      <span class="list-group-item disabled">Artículos (próximamente)</span>
+      <span class="list-group-item disabled">Guías de consumo (próximamente)</span>
+      <span class="list-group-item disabled">Árbol del problema (próximamente)</span>
+    </nav>
+  </aside>
+  <section class="col-lg-9">
+    {% block panel %}{% endblock %}
+  </section>
+</div>
+{% endblock %}

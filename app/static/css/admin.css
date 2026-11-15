@@ -1,0 +1,22 @@
+.panel-lateral .list-group-item {
+  border: 0;
+  border-radius: 12px !important;
+  margin-bottom: 0.25rem;
+  color: var(--azul-oscuro);
+  font-weight: 600;
+  background: transparent;
+}
+.panel-lateral .list-group-item:hover { background: var(--celeste); }
+.panel-lateral .list-group-item.active { background: var(--azul); color: #fff; }
+.panel-lateral .list-group-item.disabled { color: #8aa0b2; font-weight: 400; }
+
+.table-admin { --bs-table-bg: transparent; }
+.table-admin thead th {
+  background: var(--azul);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.cifra-panel { font-size: 2rem; font-weight: 700; color: var(--azul-oscuro); line-height: 1; }

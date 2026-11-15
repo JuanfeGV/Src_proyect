@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+
+{% block titulo %}Panel{% endblock %}
+
+{% block panel %}
+<h1 class="h4 mb-1">Panel de administración</h1>
+<p class="text-muted">Hola, {{ current_user.nombre }}.</p>
+
+<div class="row g-3">
+  <div class="col-sm-6 col-xl-4">
+    <a class="text-decoration-none" href="{{ url_for('admin.municipios_lista') }}">
+      <div class="tarjeta-agua p-3 h-100">
+        <div class="cifra-panel">{{ total_municipios }}</div>
+        <div class="fw-semibold">Municipios</div>
+        <div class="small text-muted">{{ sin_evaluar }} sin nivel de riesgo evaluado</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-xl-4">
+    <div class="tarjeta-agua p-3 h-100">
+      <div class="cifra-panel">{{ total_articulos }}</div>
+      <div class="fw-semibold">Artículos</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-4">
+    <div class="tarjeta-agua p-3 h-100">
+      <div class="cifra-panel">{{ total_guias }}</div>
+      <div class="fw-semibold">Guías de consumo</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-4">
+    <div class="tarjeta-agua p-3 h-100">
+      <div class="cifra-panel">{{ total_nodos }}</div>
+      <div class="fw-semibold">Nodos del árbol del problema</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

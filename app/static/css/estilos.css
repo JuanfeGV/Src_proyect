@@ -1,0 +1,70 @@
+:root {
+  --azul: #1f73b7;
+  --azul-oscuro: #14558a;
+  --celeste: #dcf0fa;
+  --verde: #2f9e6e;
+  --verde-oscuro: #247a55;
+  --verde-claro: #dff3e8;
+  --texto: #1e2b37;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--texto);
+  background: #f4f9fc;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1; }
+
+.barra-superior {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(20, 85, 138, 0.1);
+}
+
+.marca { display: flex; align-items: center; gap: 0.6rem; }
+.marca-texto { display: flex; flex-direction: column; line-height: 1.1; }
+.marca-linea1 { font-weight: 700; font-size: 0.95rem; color: var(--azul-oscuro); }
+.marca-linea2 { font-weight: 700; font-size: 0.85rem; color: var(--verde); }
+
+.menu-principal .nav-link {
+  color: var(--azul-oscuro);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  margin-left: 0.25rem;
+}
+.menu-principal .nav-link:hover { background: var(--celeste); }
+.menu-principal .nav-link.active { background: var(--azul); color: #fff; }
+
+.tarjeta-agua {
+  background: var(--celeste);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(20, 85, 138, 0.12);
+  overflow: hidden;
+}
+.tarjeta-agua-encabezado {
+  background: var(--azul);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.75rem 1.25rem;
+}
+
+.btn-agua {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.4rem 1.5rem;
+  font-weight: 600;
+}
+.btn-agua:hover { background: var(--verde-oscuro); border-color: var(--verde-oscuro); color: #fff; }
+
+.pie { background: var(--azul-oscuro); color: #fff; }
+
+.enlace-pie { color: #cfe6f5; }
+.enlace-pie:hover { color: #fff; }

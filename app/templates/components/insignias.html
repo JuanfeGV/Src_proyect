@@ -1,0 +1,9 @@
+{# Etiqueta de color para el nivel de riesgo. #}
+{% macro nivel_riesgo(nivel) %}
+  {% set datos = {"bajo": ("success", "Bajo"), "medio": ("warning", "Medio"), "alto": ("danger", "Alto")} %}
+  {% if nivel in datos %}
+    <span class="badge text-bg-{{ datos[nivel][0] }}">{{ datos[nivel][1] }}</span>
+  {% else %}
+    <span class="badge text-bg-secondary">Sin evaluar</span>
+  {% endif %}
+{% endmacro %}

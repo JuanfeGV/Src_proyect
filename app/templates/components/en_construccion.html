@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block titulo %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+<section class="tarjeta-agua">
+  <div class="tarjeta-agua-encabezado">{{ titulo }}</div>
+  <div class="p-4">
+    <p class="mb-0">{{ mensaje }}</p>
+  </div>
+</section>
+{% endblock %}
