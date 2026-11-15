@@ -5,7 +5,10 @@ from flask import Flask, render_template
 from config import config_por_entorno
 
 from .extensions import csrf, db, login_manager, migrate
+from .models.constantes import ETIQUETAS_CATEGORIA, ETIQUETAS_NIVEL, ETIQUETAS_TIPO_NODO
+from .utils.fechas import formatear_fecha
 from .utils.imagenes import url_imagen
+from .utils.texto import a_parrafos
 
 
 def create_app(entorno=None):
@@ -37,9 +40,18 @@ def create_app(entorno=None):
 
     registrar_comandos(app)
 
+    app.add_template_filter(formatear_fecha, "fecha")
+    app.add_template_filter(a_parrafos, "parrafos")
+
     @app.context_processor
     def variables_globales():
-        return {"nombre_sitio": app.config["NOMBRE_SITIO"], "url_imagen": url_imagen}
+        return {
+            "nombre_sitio": app.config["NOMBRE_SITIO"],
+            "url_imagen": url_imagen,
+            "ETIQUETAS_CATEGORIA": ETIQUETAS_CATEGORIA,
+            "ETIQUETAS_NIVEL": ETIQUETAS_NIVEL,
+            "ETIQUETAS_TIPO_NODO": ETIQUETAS_TIPO_NODO,
+        }
 
     return app
 
@@ -48,6 +60,7 @@ def _registrar_blueprints(app):
     from .blueprints.admin import bp as admin_bp
     from .blueprints.aprende import bp as aprende_bp
     from .blueprints.auth import bp as auth_bp
+    from .blueprints.busqueda import bp as busqueda_bp
     from .blueprints.main import bp as main_bp
     from .blueprints.municipios import bp as municipios_bp
     from .blueprints.noticias import bp as noticias_bp
@@ -57,6 +70,7 @@ def _registrar_blueprints(app):
     app.register_blueprint(aprende_bp)
     app.register_blueprint(municipios_bp)
     app.register_blueprint(noticias_bp)
+    app.register_blueprint(busqueda_bp)
     app.register_blueprint(reportes_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp, url_prefix="/admin")

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "components/paginacion.html" import botones_pagina %}
+{% from "components/tarjetas.html" import tarjeta_articulo with context %}
+
+{% block titulo %}Noticias{% endblock %}
+
+{% block contenido %}
+<section class="tarjeta-agua">
+  <div class="tarjeta-agua-encabezado">Noticias y artículos</div>
+  <div class="p-4">
+    <form class="row g-2 mb-3" action="{{ url_for('noticias.index') }}" method="get">
+      <div class="col-md-4">
+        <label class="visually-hidden" for="categoria">Categoría</label>
+        <select class="form-select" id="categoria" name="categoria">
+          <option value="">Noticias y artículos</option>
+          {% for clave, texto in ETIQUETAS_CATEGORIA.items() %}
+          <option value="{{ clave }}" {{ 'selected' if categoria == clave }}>{{ texto }}s</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="visually-hidden" for="municipio">Municipio</label>
+        <select class="form-select" id="municipio" name="municipio">
+          <option value="">Toda la región</option>
+          {% for m in municipios %}
+          <option value="{{ m.slug }}" {{ 'selected' if municipio and municipio.id == m.id }}>{{ m.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-auto d-flex gap-2">
+        <button class="btn btn-agua" type="submit">Filtrar</button>
+        {% if filtros %}<a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('noticias.index') }}">Limpiar</a>{% endif %}
+      </div>
+    </form>
+
+    {% if paginacion.items %}
+    <div class="row g-3">
+      {% for a in paginacion.items %}
+      <div class="col-md-6 col-lg-4">{{ tarjeta_articulo(a) }}</div>
+      {% endfor %}
+    </div>
+    {{ botones_pagina(paginacion, 'noticias.index', filtros) }}
+    {% else %}
+    <p class="mb-0">No hay publicaciones con esos filtros.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

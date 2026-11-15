@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "components/insignias.html" import nivel_riesgo %}
+{% from "components/mapa.html" import mapa_municipios %}
+{% from "components/tarjetas.html" import tarjeta_articulo, tarjeta_guia with context %}
+
+{% block titulo %}{{ municipio.nombre }}{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet/leaflet.css') }}">
+{% endblock %}
+
+{% block contenido %}
+<nav aria-label="Ruta" class="small mb-3"><a href="{{ url_for('municipios.index') }}">&larr; Todos los municipios</a></nav>
+
+<section class="tarjeta-agua mb-4">
+  <div class="tarjeta-agua-encabezado">{{ municipio.nombre }}</div>
+  <div class="p-4">
+    <p class="mb-2">Nivel de riesgo: {{ nivel_riesgo(municipio.nivel_riesgo) }}</p>
+    {% if municipio.estado_suministro %}
+    <p><strong>Estado del suministro:</strong> {{ municipio.estado_suministro }}</p>
+    {% endif %}
+    {% if municipio.resumen %}{{ municipio.resumen|parrafos }}{% endif %}
+
+    <h2 class="h5 mt-4">Indicadores</h2>
+    {% if municipio.indicadores %}
+    <div class="table-responsive">
+      <table class="table table-sm align-middle bg-white mb-0">
+        <thead><tr><th>Indicador</th><th>Valor</th><th>Periodo</th><th>Fuente</th></tr></thead>
+        <tbody>
+          {% for i in municipio.indicadores %}
+          <tr>
+            <td>{{ i.nombre }}</td>
+            <td>{{ i.valor }}{% if i.unidad %} {{ i.unidad }}{% endif %}</td>
+            <td>{{ i.periodo or '—' }}</td>
+            <td>{{ i.fuente or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="mb-0">Este municipio todavía no tiene indicadores cargados.</p>
+    {% endif %}
+
+    {% if municipio.recomendaciones %}
+    <h2 class="h5 mt-4">Recomendaciones locales</h2>
+    {{ municipio.recomendaciones|parrafos }}
+    {% endif %}
+  </div>
+</section>
+
+{% if puntos_mapa %}
+<section class="mb-4">{{ mapa_municipios(puntos_mapa, zoom=12) }}</section>
+{% endif %}
+
+<section class="mb-4">
+  <h2 class="h5">Guías para este municipio</h2>
+  {% if not evaluado %}
+  <p class="small text-muted">Aún no tiene nivel de riesgo evaluado; se muestran las guías que aplican a todos los niveles.</p>
+  {% endif %}
+  {% if guias %}
+  <div class="row g-3">
+    {% for g in guias %}<div class="col-md-6 col-lg-4">{{ tarjeta_guia(g) }}</div>{% endfor %}
+  </div>
+  {% else %}
+  <p>No hay guías publicadas todavía.</p>
+  {% endif %}
+</section>
+
+<section>
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="h5 mb-0">Noticias de {{ municipio.nombre }}</h2>
+    <a href="{{ url_for('noticias.index', municipio=municipio.slug) }}">Ver todas</a>
+  </div>
+  {% if noticias %}
+  <div class="row g-3">
+    {% for a in noticias %}<div class="col-md-6 col-lg-3">{{ tarjeta_articulo(a) }}</div>{% endfor %}
+  </div>
+  {% else %}
+  <p>No hay noticias publicadas para este municipio.</p>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='vendor/leaflet/leaflet.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
+{% endblock %}

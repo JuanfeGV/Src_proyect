@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "components/arbol.html" import arbol_problema %}
+{% from "components/insignias.html" import nivel_riesgo %}
+{% from "components/tarjetas.html" import tarjeta_guia with context %}
+
+{% block titulo %}Aprende{% endblock %}
+
+{% block contenido %}
+<section class="tarjeta-agua mb-4" id="arbol">
+  <div class="tarjeta-agua-encabezado">Árbol del problema hídrico</div>
+  <div class="p-4">
+    <p class="small">Toca cualquier recuadro para ver su descripción y la fuente.</p>
+    {{ arbol_problema(arbol) }}
+  </div>
+</section>
+
+<section class="tarjeta-agua" id="guias">
+  <div class="tarjeta-agua-encabezado">Guías de consumo responsable</div>
+  <div class="p-4">
+    <form class="row g-2 mb-3" action="{{ url_for('aprende.index', _anchor='guias') }}" method="get">
+      <div class="col-sm">
+        <label class="form-label small mb-1" for="municipio">Elige tu municipio para ver las guías de tu nivel de riesgo</label>
+        <select class="form-select" id="municipio" name="municipio">
+          <option value="">— Todos —</option>
+          {% for m in municipios %}
+          <option value="{{ m.slug }}" {{ 'selected' if municipio and municipio.id == m.id }}>{{ m.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-auto d-flex align-items-end"><button class="btn btn-agua w-100" type="submit">Ver guías</button></div>
+    </form>
+
+    <ul class="nav nav-pills mb-3" aria-label="Filtrar por nivel de riesgo">
+      <li class="nav-item"><a class="nav-link {{ 'active' if not nivel and not municipio }}" href="{{ url_for('aprende.index', _anchor='guias') }}">Todas</a></li>
+      {% for clave in ['bajo', 'medio', 'alto'] %}
+      <li class="nav-item">
+        <a class="nav-link {{ 'active' if nivel == clave and not municipio }}"
+           href="{{ url_for('aprende.index', nivel=clave, _anchor='guias') }}">Riesgo {{ ETIQUETAS_NIVEL[clave]|lower }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% if municipio %}
+      {% if solo_generales %}
+      <p class="alert alert-info py-2 small">{{ municipio.nombre }} todavía no tiene nivel de riesgo evaluado, así que se muestran solo las guías que aplican a todos los niveles.</p>
+      {% else %}
+      <p class="small">Guías para <strong>{{ municipio.nombre }}</strong> (riesgo {{ nivel_riesgo(municipio.nivel_riesgo) }}), más las que aplican a todos los niveles.
+        <a href="{{ url_for('municipios.ficha', slug=municipio.slug) }}">Ver ficha del municipio</a></p>
+      {% endif %}
+    {% elif nivel %}
+    <p class="small">Mostrando las guías de riesgo <strong>{{ ETIQUETAS_NIVEL[nivel]|lower }}</strong> y las que aplican a todos los niveles.</p>
+    {% endif %}
+
+    {% if guias %}
+    <div class="row g-3">
+      {% for g in guias %}
+      <div class="col-md-6 col-lg-4">{{ tarjeta_guia(g) }}</div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="mb-0">No hay guías publicadas para esta selección.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/arbol.js') }}"></script>
+{% endblock %}

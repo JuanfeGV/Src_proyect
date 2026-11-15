@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from "components/insignias.html" import nivel_riesgo %}
+{% from "components/mapa.html" import mapa_municipios %}
+
+{% block titulo %}Municipios{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet/leaflet.css') }}">
+{% endblock %}
+
+{% block contenido %}
+<section class="tarjeta-agua">
+  <div class="tarjeta-agua-encabezado">Municipios de Sabana Centro</div>
+  <div class="p-4">
+    <form class="row g-2 mb-3" role="search" action="{{ url_for('municipios.index') }}" method="get">
+      <div class="col-md">
+        <label class="visually-hidden" for="q">Buscar municipio</label>
+        <input class="form-control" type="search" id="q" name="q" value="{{ q }}" maxlength="100"
+               placeholder="Busca por nombre, resumen o recomendaciones">
+      </div>
+      <div class="col-md-3">
+        <label class="visually-hidden" for="nivel">Nivel de riesgo</label>
+        <select class="form-select" id="nivel" name="nivel">
+          <option value="">Todos los niveles</option>
+          {% for clave in ['bajo', 'medio', 'alto'] %}
+          <option value="{{ clave }}" {{ 'selected' if nivel == clave }}>Riesgo {{ ETIQUETAS_NIVEL[clave]|lower }}</option>
+          {% endfor %}
+          <option value="sin-evaluar" {{ 'selected' if nivel == 'sin-evaluar' }}>Sin evaluar</option>
+        </select>
+      </div>
+      <div class="col-md-auto d-flex gap-2">
+        <button class="btn btn-agua" type="submit">Buscar</button>
+        {% if q or nivel %}<a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('municipios.index') }}">Limpiar</a>{% endif %}
+      </div>
+    </form>
+
+    {% if municipios %}
+    <div class="mb-3">{{ mapa_municipios(puntos_mapa) }}</div>
+    <p class="small text-muted">{{ municipios|length }} municipio{{ '' if municipios|length == 1 else 's' }}</p>
+    <div class="row g-3">
+      {% for m in municipios %}
+      <div class="col-md-6 col-lg-4">
+        <article class="tarjeta-contenido h-100 p-3">
+          <h2 class="h6 mb-1"><a class="enlace-titulo" href="{{ url_for('municipios.ficha', slug=m.slug) }}">{{ m.nombre }}</a></h2>
+          <p class="mb-1">{{ nivel_riesgo(m.nivel_riesgo) }}</p>
+          {% if m.estado_suministro %}<p class="small mb-1"><strong>Suministro:</strong> {{ m.estado_suministro }}</p>{% endif %}
+          <p class="small mb-0">{{ (m.resumen or '')|truncate(120) }}</p>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="mb-0">No se encontraron municipios con esa búsqueda.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='vendor/leaflet/leaflet.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
+{% endblock %}

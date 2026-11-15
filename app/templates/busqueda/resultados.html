@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "components/insignias.html" import nivel_riesgo %}
+
+{% block titulo %}Buscar{% endblock %}
+
+{% block contenido %}
+<section class="tarjeta-agua">
+  <div class="tarjeta-agua-encabezado">Buscar en el sitio</div>
+  <div class="p-4">
+    <form class="row g-2 mb-3" role="search" action="{{ url_for('busqueda.index') }}" method="get">
+      <div class="col-sm">
+        <label class="visually-hidden" for="q">Palabras a buscar</label>
+        <input class="form-control" type="search" id="q" name="q" value="{{ q }}" maxlength="100"
+               placeholder="Municipios, noticias, guías, causas del problema…">
+      </div>
+      <div class="col-sm-auto"><button class="btn btn-agua w-100" type="submit">Buscar</button></div>
+    </form>
+
+    {% if not q %}
+      <p class="mb-0">Escribe una o varias palabras. La búsqueda no distingue mayúsculas ni tildes.</p>
+    {% elif muy_corta %}
+      <p class="mb-0">Escribe al menos {{ minimo }} letras para buscar.</p>
+    {% elif resultados.total == 0 %}
+      <p class="mb-0">No encontramos resultados para «{{ q }}». Prueba con otras palabras.</p>
+    {% else %}
+      <p class="small text-muted">{{ resultados.total }} resultado{{ '' if resultados.total == 1 else 's' }} para «{{ q }}»</p>
+
+      {% if resultados.municipios %}
+      <h2 class="h6 mt-3">Municipios</h2>
+      <ul class="list-group mb-3">
+        {% for m in resultados.municipios %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="{{ url_for('municipios.ficha', slug=m.slug) }}">{{ m.nombre }}</a> {{ nivel_riesgo(m.nivel_riesgo) }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if resultados.articulos %}
+      <h2 class="h6 mt-3">Noticias y artículos</h2>
+      <ul class="list-group mb-3">
+        {% for a in resultados.articulos %}
+        <li class="list-group-item">
+          <a href="{{ url_for('noticias.detalle', slug=a.slug) }}">{{ a.titulo }}</a>
+          <span class="small text-muted d-block">{{ a.resumen or (a.contenido|truncate(120)) }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if resultados.guias %}
+      <h2 class="h6 mt-3">Guías de consumo</h2>
+      <ul class="list-group mb-3">
+        {% for g in resultados.guias %}
+        <li class="list-group-item">
+          <a href="{{ url_for('aprende.guia', guia_id=g.id) }}">{{ g.titulo }}</a>
+          <span class="small text-muted d-block">{{ g.resumen or (g.contenido|truncate(120)) }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if resultados.nodos %}
+      <h2 class="h6 mt-3">Árbol del problema</h2>
+      <ul class="list-group mb-0">
+        {% for n in resultados.nodos %}
+        <li class="list-group-item">
+          <a href="{{ url_for('aprende.index', _anchor='nodo-' ~ n.id) }}">{{ n.titulo }}</a>
+          <span class="small text-muted d-block">{{ ETIQUETAS_TIPO_NODO.get(n.tipo, n.tipo) }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

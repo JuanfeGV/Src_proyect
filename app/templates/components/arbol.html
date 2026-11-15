@@ -1,0 +1,48 @@
+{# Árbol del problema. Cada recuadro con descripción o fuente se despliega al tocarlo
+   (usa <details>, sin JavaScript). La versión interactiva avanzada es de la Fase 5. #}
+{% macro nodo(n, clase="") %}
+  {% if n.descripcion or n.fuente %}
+  <details class="nodo {{ clase }}" id="nodo-{{ n.id }}">
+    <summary>{{ n.titulo }}</summary>
+    <div class="nodo-detalle">
+      {% if n.descripcion %}{{ n.descripcion|parrafos }}{% endif %}
+      {% if n.fuente %}<p class="nodo-fuente mb-0">Fuente: {{ n.fuente }}</p>{% endif %}
+    </div>
+  </details>
+  {% else %}
+  <div class="nodo {{ clase }}" id="nodo-{{ n.id }}"><span class="nodo-titulo">{{ n.titulo }}</span></div>
+  {% endif %}
+{% endmacro %}
+
+{% macro rama(directo, indirectos, tipo) %}
+  <div class="rama rama-{{ tipo }}">
+    {{ nodo(directo, "nodo-directo") }}
+    {% for hijo in indirectos %}
+      {{ nodo(hijo, "nodo-indirecto") }}
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro arbol_problema(arbol) %}
+  {% if not arbol.central %}
+  <p class="mb-0">El árbol del problema todavía no ha sido cargado.</p>
+  {% else %}
+  <div class="arbol">
+    <h3 class="arbol-etiqueta">Efectos</h3>
+    <div class="row g-3">
+      {% for directo, indirectos in arbol.efectos %}
+      <div class="col-md-6">{{ rama(directo, indirectos, "efecto") }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="arbol-central">{{ nodo(arbol.central, "nodo-central") }}</div>
+
+    <h3 class="arbol-etiqueta">Causas</h3>
+    <div class="row g-3">
+      {% for directo, indirectos in arbol.causas %}
+      <div class="col-md-4">{{ rama(directo, indirectos, "causa") }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+{% endmacro %}

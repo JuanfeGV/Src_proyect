@@ -1,0 +1,9 @@
+{# Mapa de municipios (Leaflet). 'puntos' viene de datos_mapa(). Dibuja el recuadro y deja los
+   datos en un <script type="application/json">; static/js/mapa.js lo convierte en mapa.
+   Hay que cargar leaflet.css (head_extra) y leaflet.js + mapa.js (scripts_extra). #}
+{% macro mapa_municipios(puntos, id="mapa-municipios", zoom=none) %}
+<div id="{{ id }}" class="mapa" role="region" aria-label="Mapa de municipios" data-zoom="{{ zoom or '' }}">
+  <p class="mapa-aviso small mb-0 p-3">Cargando mapa… si no aparece, usa la lista de municipios.</p>
+</div>
+<script type="application/json" id="{{ id }}-datos">{{ puntos|tojson }}</script>
+{% endmacro %}

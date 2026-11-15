@@ -1,6 +1,14 @@
 {% extends "base.html" %}
+{% from "components/arbol.html" import arbol_problema %}
+{% from "components/mapa.html" import mapa_municipios %}
+{% from "components/insignias.html" import nivel_riesgo %}
+{% from "components/tarjetas.html" import tarjeta_articulo with context %}
 
 {% block titulo %}Inicio{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet/leaflet.css') }}">
+{% endblock %}
 
 {% block contenido %}
 <div class="row g-4">
@@ -9,7 +17,9 @@
       <div class="tarjeta-agua-encabezado">Crisis hídrica: causas y conciencia</div>
       <div class="p-4">
         <h1 class="h4">Árbol del problema hídrico</h1>
-        <p class="mb-0">Aquí irá el árbol del problema interactivo (Fase 5).</p>
+        <p class="small">Toca cualquier recuadro para ver su descripción y la fuente.</p>
+        {{ arbol_problema(arbol) }}
+        <p class="mt-3 mb-0"><a class="btn btn-agua" href="{{ url_for('aprende.index') }}">Aprende a cuidar el agua</a></p>
       </div>
     </section>
   </div>
@@ -17,4 +27,59 @@
     {% include "reportes/_widget.html" %}
   </div>
 </div>
+
+<section class="tarjeta-agua mt-4">
+  <div class="tarjeta-agua-encabezado">Municipios de Sabana Centro</div>
+  <div class="p-4">
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <form class="row g-2 mb-3" role="search" action="{{ url_for('municipios.index') }}" method="get">
+          <div class="col-sm">
+            <input class="form-control" type="search" name="q" maxlength="100"
+                   placeholder="Busca tu municipio" aria-label="Buscar municipio">
+          </div>
+          <div class="col-sm-auto"><button class="btn btn-agua w-100" type="submit">Buscar</button></div>
+        </form>
+        {% if municipios %}
+        <ul class="lista-municipios list-unstyled mb-0">
+          {% for m in municipios %}
+          <li>
+            <a class="chip-municipio" href="{{ url_for('municipios.ficha', slug=m.slug) }}">
+              <span>{{ m.nombre }}</span> {{ nivel_riesgo(m.nivel_riesgo) }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="mb-0">Todavía no hay municipios cargados.</p>
+        {% endif %}
+      </div>
+      <div class="col-lg-7">
+        {{ mapa_municipios(puntos_mapa) }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="h5 mb-0">Últimas noticias</h2>
+    <a href="{{ url_for('noticias.index') }}">Ver todas</a>
+  </div>
+  {% if noticias %}
+  <div class="row g-3">
+    {% for a in noticias %}
+    <div class="col-md-4">{{ tarjeta_articulo(a) }}</div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>Aún no hay noticias publicadas.</p>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='vendor/leaflet/leaflet.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
+<script src="{{ url_for('static', filename='js/arbol.js') }}"></script>
 {% endblock %}

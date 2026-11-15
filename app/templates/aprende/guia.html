@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "components/insignias.html" import nivel_riesgo %}
+
+{% block titulo %}{{ guia.titulo }}{% endblock %}
+
+{% block contenido %}
+<nav aria-label="Ruta" class="small mb-3"><a href="{{ url_for('aprende.index', _anchor='guias') }}">&larr; Volver a las guías</a></nav>
+<article class="tarjeta-agua">
+  <div class="tarjeta-agua-encabezado">Guía de consumo responsable</div>
+  <div class="p-4">
+    {% if not guia.publicada %}
+    <p class="alert alert-warning py-2 small">Esta guía no está publicada. Solo la ves tú como administrador.</p>
+    {% endif %}
+    <h1 class="h3">{{ guia.titulo }}</h1>
+    <p>
+      {% if guia.nivel_riesgo == 'todos' %}
+        <span class="badge text-bg-info">Aplica a todos los niveles</span>
+      {% else %}
+        Aplica a riesgo {{ nivel_riesgo(guia.nivel_riesgo) }}
+      {% endif %}
+    </p>
+    {% if guia.imagen %}
+    <img class="img-fluid rounded mb-3" src="{{ url_imagen(guia.imagen) }}" alt="">
+    {% endif %}
+    {{ guia.contenido|parrafos }}
+  </div>
+</article>
+{% endblock %}

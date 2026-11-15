@@ -33,7 +33,14 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="menuPrincipal">
-        <ul class="navbar-nav ms-auto menu-principal">
+        <form class="buscador-nav d-flex ms-lg-auto my-2 my-lg-0" role="search"
+              action="{{ url_for('busqueda.index') }}" method="get">
+          <input class="form-control form-control-sm" type="search" name="q" maxlength="100"
+                 placeholder="Buscar en el sitio" aria-label="Buscar en el sitio"
+                 value="{{ request.args.get('q', '') if request.endpoint == 'busqueda.index' }}">
+          <button class="btn btn-sm btn-agua ms-1" type="submit">Buscar</button>
+        </form>
+        <ul class="navbar-nav ms-lg-2 menu-principal">
           {% for endpoint, blueprint, texto in menu %}
           <li class="nav-item">
             <a class="nav-link {{ 'active' if bp_actual == blueprint }}"
