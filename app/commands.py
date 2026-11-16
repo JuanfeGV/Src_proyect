@@ -20,9 +20,9 @@ def registrar_comandos(app):
         if Usuario.query.filter_by(email=email).first():
             raise click.ClickException("Ya existe un usuario con ese correo.")
 
-        clave = click.prompt("Contraseña (mínimo 8 caracteres)", hide_input=True, confirmation_prompt=True)
-        if len(clave) < 8:
-            raise click.ClickException("La contraseña debe tener al menos 8 caracteres.")
+        clave = click.prompt("Contraseña (mínimo 12 caracteres)", hide_input=True, confirmation_prompt=True)
+        if len(clave) < 12:
+            raise click.ClickException("La contraseña debe tener al menos 12 caracteres.")
 
         usuario = Usuario(nombre=nombre, email=email, rol="admin")
         usuario.set_password(clave)

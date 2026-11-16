@@ -20,6 +20,8 @@
          href="{{ url_for('admin.arbol_lista') }}">Árbol del problema</a>
       <a class="list-group-item {{ 'active' if ep.startswith('admin.reportes') }}"
          href="{{ url_for('admin.reportes_lista') }}">Reportes ciudadanos</a>
+      <a class="list-group-item {{ 'active' if ep.startswith('admin.correos') }}"
+         href="{{ url_for('admin.correos_lista') }}">Bandeja de entrada</a>
     </nav>
   </aside>
   <section class="col-lg-9">

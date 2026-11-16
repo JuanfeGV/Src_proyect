@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_user, logout_user
 
+from ...extensions import limiter
 from ...models import Usuario
 from . import bp
 from .forms import LoginForm
@@ -21,14 +22,22 @@ def _destino_seguro(destino):
 
 
 @bp.route("/ingresar", methods=["GET", "POST"])
+@limiter.limit("5 per minute", methods=["POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("admin.panel"))
+        if current_user.is_active and current_user.rol == "admin":
+            return redirect(url_for("admin.panel"))
+        logout_user()
 
     form = LoginForm()
     if form.validate_on_submit():
         usuario = Usuario.query.filter_by(email=form.email.data.strip().lower()).first()
-        if usuario and usuario.activo and usuario.check_password(form.password.data):
+        if (
+            usuario
+            and usuario.activo
+            and usuario.rol == "admin"
+            and usuario.check_password(form.password.data)
+        ):
             login_user(usuario, remember=form.recordar.data)
             return redirect(_destino_seguro(request.args.get("next")) or url_for("admin.panel"))
         flash("Correo o contraseña incorrectos.", "danger")

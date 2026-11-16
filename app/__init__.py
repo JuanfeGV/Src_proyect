@@ -4,7 +4,7 @@ from flask import Flask, render_template
 
 from config import config_por_entorno
 
-from .extensions import csrf, db, login_manager, migrate
+from .extensions import csrf, db, limiter, login_manager, migrate
 from .models.constantes import ETIQUETAS_CATEGORIA, ETIQUETAS_NIVEL, ETIQUETAS_TIPO_NODO
 from .utils.fechas import formatear_fecha
 from .utils.imagenes import url_imagen
@@ -25,6 +25,7 @@ def create_app(entorno=None):
     migrate.init_app(app, db)
     csrf.init_app(app)
     login_manager.init_app(app)
+    limiter.init_app(app)
     login_manager.login_view = "auth.login"
     login_manager.login_message = "Inicia sesión para acceder al panel."
     login_manager.login_message_category = "warning"
@@ -81,6 +82,7 @@ def _registrar_manejadores_error(app):
         403: ("Acceso denegado", "No tienes permiso para ver esta página."),
         404: ("Página no encontrada", "La página que buscas no existe o fue movida."),
         413: ("Archivo demasiado grande", "Lo que intentaste subir pesa demasiado. El máximo es de 8 MB."),
+        429: ("Demasiados intentos", "Espera un momento antes de volver a intentarlo."),
         500: ("Error del servidor", "Algo salió mal de nuestro lado. Intenta de nuevo en unos minutos."),
     }
 

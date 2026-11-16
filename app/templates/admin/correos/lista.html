@@ -1,0 +1,52 @@
+{% extends "admin/base_admin.html" %}
+
+{% block titulo %}Bandeja de entrada · Panel{% endblock %}
+
+{% block panel %}
+<div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+  <h1 class="h4 mb-0">Bandeja de entrada</h1>
+  <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.correos_lista') }}">Actualizar</a>
+</div>
+
+{% if error %}
+<div class="alert alert-warning" role="alert">{{ error }}</div>
+{% else %}
+<div class="tarjeta-agua">
+  <div class="table-responsive">
+    <table class="table table-admin align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Remitente</th>
+          <th>Asunto</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mensaje in mensajes %}
+        <tr>
+          <td class="text-nowrap">{{ mensaje.fecha }}</td>
+          <td class="text-break">{{ mensaje.remitente }}</td>
+          <td class="text-break">
+            <a class="{{ 'fw-bold' if not mensaje.leido else '' }}"
+               href="{{ url_for('admin.correo_detalle', uid=mensaje.uid) }}">{{ mensaje.asunto }}</a>
+          </td>
+          <td>
+            {% if mensaje.leido %}
+            <span>Leído</span>
+            {% else %}
+            <span class="badge text-bg-primary">No leído</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="text-center text-muted py-4">No hay correos en la bandeja de entrada.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

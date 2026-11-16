@@ -28,10 +28,15 @@ class Config:
     SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
     SMTP_SENDER = os.environ.get("SMTP_SENDER")
     EMAIL_REPORTS_TO = os.environ.get("EMAIL_REPORTS_TO", "aguacomunidadsabana@gmail.com")
+    IMAP_USERNAME = os.environ.get("IMAP_USERNAME")
+    IMAP_PASSWORD = os.environ.get("IMAP_PASSWORD")
+    IMAP_SERVER = os.environ.get("IMAP_SERVER", "imap.gmail.com")
+    IMAP_PORT = int(os.environ.get("IMAP_PORT", "993"))
     MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MB máximo por subida (las imágenes se reducen al guardarlas)
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE") == "1"
+    RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
     # La cookie de "mantener sesión iniciada" sigue las mismas reglas.
     REMEMBER_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_SAMESITE = "Lax"
