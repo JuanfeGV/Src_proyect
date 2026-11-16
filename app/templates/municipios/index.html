@@ -13,12 +13,23 @@
   <div class="tarjeta-agua-encabezado">Municipios de Sabana Centro</div>
   <div class="p-4">
     <form class="row g-2 mb-3" role="search" action="{{ url_for('municipios.index') }}" method="get">
-      <div class="col-md">
+      <div class="col-md-5">
         <label class="visually-hidden" for="q">Buscar municipio</label>
         <input class="form-control" type="search" id="q" name="q" value="{{ q }}" maxlength="100"
                placeholder="Busca por nombre, resumen o recomendaciones">
       </div>
       <div class="col-md-3">
+        <label class="visually-hidden" for="municipio">Municipio</label>
+        <select class="form-select" id="municipio" name="municipio">
+          <option value="">Todos los municipios</option>
+          {% for m in municipios_disponibles %}
+          <option value="{{ m.slug }}" {{ 'selected' if municipio_seleccionado and municipio_seleccionado.id == m.id }}>
+            {{ m.nombre }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
         <label class="visually-hidden" for="nivel">Nivel de riesgo</label>
         <select class="form-select" id="nivel" name="nivel">
           <option value="">Todos los niveles</option>
@@ -30,7 +41,9 @@
       </div>
       <div class="col-md-auto d-flex gap-2">
         <button class="btn btn-agua" type="submit">Buscar</button>
-        {% if q or nivel %}<a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('municipios.index') }}">Limpiar</a>{% endif %}
+        {% if q or nivel or municipio_seleccionado %}
+        <a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('municipios.index') }}">Limpiar</a>
+        {% endif %}
       </div>
     </form>
 

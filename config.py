@@ -21,6 +21,13 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "clave-solo-para-desarrollo")
     SQLALCHEMY_DATABASE_URI = _url_base_de_datos()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SMTP_SERVER = os.environ.get("SMTP_SERVER")
+    SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+    SMTP_USE_TLS = os.environ.get("SMTP_USE_TLS", "1") == "1"
+    SMTP_USERNAME = os.environ.get("SMTP_USERNAME")
+    SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
+    SMTP_SENDER = os.environ.get("SMTP_SENDER")
+    EMAIL_REPORTS_TO = os.environ.get("EMAIL_REPORTS_TO", "aguacomunidadsabana@gmail.com")
     MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MB máximo por subida (las imágenes se reducen al guardarlas)
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"

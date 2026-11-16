@@ -18,6 +18,8 @@
          href="{{ url_for('admin.guias_lista') }}">Guías de consumo</a>
       <a class="list-group-item {{ 'active' if ep.startswith('admin.arbol') or ep.startswith('admin.nodo') }}"
          href="{{ url_for('admin.arbol_lista') }}">Árbol del problema</a>
+      <a class="list-group-item {{ 'active' if ep.startswith('admin.reportes') }}"
+         href="{{ url_for('admin.reportes_lista') }}">Reportes ciudadanos</a>
     </nav>
   </aside>
   <section class="col-lg-9">

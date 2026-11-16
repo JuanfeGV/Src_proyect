@@ -17,8 +17,13 @@ from . import bp
 def index():
     q = request.args.get("q", "").strip()[:LARGO_MAXIMO_BUSQUEDA]
     nivel = request.args.get("nivel", "").strip().lower()
+    slug = request.args.get("municipio", "").strip()
+    municipios_disponibles = Municipio.query.order_by(Municipio.nombre).all()
 
     consulta = Municipio.query
+    municipio_seleccionado = next((m for m in municipios_disponibles if m.slug == slug), None)
+    if municipio_seleccionado:
+        consulta = consulta.filter(Municipio.id == municipio_seleccionado.id)
     if nivel in NIVELES_RIESGO:
         consulta = consulta.filter(Municipio.nivel_riesgo == nivel)
     elif nivel == "sin-evaluar":
@@ -31,6 +36,8 @@ def index():
     return render_template(
         "municipios/index.html",
         municipios=municipios,
+        municipios_disponibles=municipios_disponibles,
+        municipio_seleccionado=municipio_seleccionado,
         puntos_mapa=datos_mapa(municipios),
         q=q,
         nivel=nivel,

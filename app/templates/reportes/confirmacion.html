@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block titulo %}Reporte recibido{% endblock %}
+
+{% block contenido %}
+<section class="tarjeta-agua mx-auto" style="max-width: 760px;">
+  <div class="tarjeta-agua-encabezado">Reporte ciudadano</div>
+  <div class="p-4">
+    <h1 class="h4">Gracias por ayudarnos a cuidar el agua</h1>
+    <p class="mb-3">Tu reporte quedó registrado. El equipo revisará la información.</p>
+    <a class="btn btn-agua" href="{{ url_for('main.inicio') }}">Volver al inicio</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% from "components/paginacion.html" import botones_pagina %}
+
+{% block titulo %}Reportes ciudadanos · Panel{% endblock %}
+
+{% block panel %}
+<h1 class="h4 mb-3">Reportes ciudadanos</h1>
+
+<div class="tarjeta-agua">
+  <div class="table-responsive">
+    <table class="table table-admin align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Fecha (UTC)</th>
+          <th>Municipio</th>
+          <th>Barrio o vereda</th>
+          <th>Tipo de falla</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reporte in paginacion.items %}
+        <tr>
+          <td class="text-nowrap">{{ reporte.creado_en.strftime("%d/%m/%Y %H:%M") }}</td>
+          <td>{{ reporte.municipio }}</td>
+          <td>{{ reporte.barrio }}</td>
+          <td>{{ reporte.tipo_falla | replace("_", " ") | title }}</td>
+          <td class="text-break">{{ reporte.descripcion }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-4">Aún no hay reportes ciudadanos.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{{ botones_pagina(paginacion, "admin.reportes_lista") }}
+{% endblock %}

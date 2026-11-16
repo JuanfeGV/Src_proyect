@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block titulo %}Reporte ciudadano{% endblock %}
+
+{% block contenido %}
+<section class="tarjeta-agua mx-auto" style="max-width: 760px;">
+  <div class="tarjeta-agua-encabezado">Reporte ciudadano</div>
+  <div class="p-4">
+    <h1 class="h4">Cuéntanos qué ocurre</h1>
+    <p class="text-muted">Los campos marcados son obligatorios. El reporte se enviará al equipo del portal.</p>
+
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="visually-hidden" aria-hidden="true">
+        <label for="{{ form.sitio_web.id }}">Deja este campo vacío</label>
+        {{ form.sitio_web(tabindex="-1", autocomplete="off") }}
+      </div>
+
+      {% for campo in [form.municipio_id, form.barrio, form.tipo_falla, form.descripcion] %}
+      <div class="mb-3">
+        {{ campo.label(class="form-label") }}
+        {% if campo.name == "descripcion" %}
+          {{ campo(class="form-control", rows="5", maxlength="2000", required=true, aria_describedby=campo.id ~ "-errores") }}
+        {% else %}
+          {{ campo(class="form-select" if campo.name in ["municipio_id", "tipo_falla"] else "form-control", required=true, aria_describedby=campo.id ~ "-errores") }}
+        {% endif %}
+        <div id="{{ campo.id }}-errores" class="form-text text-danger" aria-live="polite">
+          {% for error in campo.errors %}<div>{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="d-flex flex-wrap gap-2">
+        {{ form.enviar(class="btn btn-agua") }}
+        <a class="btn btn-outline-secondary" href="{{ url_for('main.inicio') }}">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
