@@ -5,7 +5,7 @@
   <div>
     <div class="fw-semibold">{{ nodo.titulo }}</div>
     <div class="small text-muted">
-      {% if nodo.fuente %}Fuente: {{ nodo.fuente }}{% else %}Sin fuente{% endif %}
+      {% if nodo.fuente %}Fuente: {{ nodo.fuente|enlaces }}{% else %}Sin fuente{% endif %}
       · {{ "Con descripción" if nodo.descripcion else "Sin descripción" }}
     </div>
   </div>

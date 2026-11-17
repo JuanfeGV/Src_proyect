@@ -8,7 +8,7 @@ from .extensions import csrf, db, limiter, login_manager, migrate
 from .models.constantes import ETIQUETAS_CATEGORIA, ETIQUETAS_NIVEL, ETIQUETAS_TIPO_NODO
 from .utils.fechas import formatear_fecha
 from .utils.imagenes import url_imagen
-from .utils.texto import a_parrafos
+from .utils.texto import a_parrafos, enlaces_seguros
 
 
 def create_app(entorno=None):
@@ -43,6 +43,7 @@ def create_app(entorno=None):
 
     app.add_template_filter(formatear_fecha, "fecha")
     app.add_template_filter(a_parrafos, "parrafos")
+    app.add_template_filter(enlaces_seguros, "enlaces")
 
     @app.context_processor
     def variables_globales():

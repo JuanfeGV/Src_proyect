@@ -13,7 +13,7 @@
   <div class="tarjeta-agua-encabezado">Municipios de Sabana Centro</div>
   <div class="p-4">
     <form class="row g-2 mb-3" role="search" action="{{ url_for('municipios.index') }}" method="get">
-      <div class="col-md-5">
+      <div class="col-md-4">
         <label class="visually-hidden" for="q">Buscar municipio</label>
         <input class="form-control" type="search" id="q" name="q" value="{{ q }}" maxlength="100"
                placeholder="Busca por nombre, resumen o recomendaciones">
@@ -39,29 +39,121 @@
           <option value="sin-evaluar" {{ 'selected' if nivel == 'sin-evaluar' }}>Sin evaluar</option>
         </select>
       </div>
+      <div class="col-md-2">
+        <label class="visually-hidden" for="prioridad_cobertura">Prioridad por cobertura rural</label>
+        <select class="form-select" id="prioridad_cobertura" name="prioridad_cobertura">
+          <option value="">Todas las prioridades</option>
+          <option value="alta" {{ 'selected' if prioridad_cobertura == 'alta' }}>Prioridad alta</option>
+          <option value="media" {{ 'selected' if prioridad_cobertura == 'media' }}>Prioridad media</option>
+          <option value="baja" {{ 'selected' if prioridad_cobertura == 'baja' }}>Prioridad baja</option>
+          <option value="sin-evaluar" {{ 'selected' if prioridad_cobertura == 'sin-evaluar' }}>Sin evaluar</option>
+        </select>
+      </div>
       <div class="col-md-auto d-flex gap-2">
         <button class="btn btn-agua" type="submit">Buscar</button>
-        {% if q or nivel or municipio_seleccionado %}
+        {% if q or nivel or municipio_seleccionado or prioridad_cobertura %}
         <a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('municipios.index') }}">Limpiar</a>
         {% endif %}
       </div>
     </form>
 
     {% if municipios %}
-    <div class="mb-3">{{ mapa_municipios(puntos_mapa) }}</div>
-    <p class="small text-muted">{{ municipios|length }} municipio{{ '' if municipios|length == 1 else 's' }}</p>
-    <div class="row g-3">
-      {% for m in municipios %}
+    <div class="mb-3">{{ mapa_municipios(puntos_mapa, selector_indicador=true) }}</div>
+    <div class="municipios-acordeon-controles d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <p class="small text-muted mb-0">{{ municipios|length }} municipio{{ '' if municipios|length == 1 else 's' }}</p>
+      <button class="btn btn-outline-primary btn-sm" type="button" id="alternar-todos-municipios"
+              aria-expanded="false" aria-controls="municipios-acordeon">
+        Expandir todos
+      </button>
+    </div>
+    <div class="row g-3" id="municipios-acordeon" data-municipios-acordeon>
+      {% for fila in municipios_comparacion %}
+      {% set m = fila.municipio %}
       <div class="col-md-6 col-lg-4">
-        <article class="tarjeta-contenido h-100 p-3">
-          <h2 class="h6 mb-1"><a class="enlace-titulo" href="{{ url_for('municipios.ficha', slug=m.slug) }}">{{ m.nombre }}</a></h2>
-          <p class="mb-1">{{ nivel_riesgo(m.nivel_riesgo) }}</p>
-          {% if m.estado_suministro %}<p class="small mb-1"><strong>Suministro:</strong> {{ m.estado_suministro }}</p>{% endif %}
-          <p class="small mb-0">{{ (m.resumen or '')|truncate(120) }}</p>
+        <article class="tarjeta-contenido municipio-acordeon">
+          <h2 class="h6 mb-0">
+            <button class="municipio-acordeon__toggle" type="button"
+                    id="municipio-{{ m.id }}-boton" aria-expanded="false"
+                    aria-controls="municipio-{{ m.id }}-detalle">
+              <span class="municipio-acordeon__nombre">{{ m.nombre }}</span>
+              <span class="cobertura-prioridad cobertura-prioridad--{{ fila.evaluacion.prioridad or 'sin-evaluar' }}">
+                Prioridad {{ fila.evaluacion.prioridad_texto|lower }}
+              </span>
+              <span class="municipio-acordeon__flecha" aria-hidden="true"></span>
+            </button>
+          </h2>
+          <div class="municipio-acordeon__panel" id="municipio-{{ m.id }}-detalle" hidden>
+            <div class="municipio-acordeon__contenido">
+              <dl class="municipio-acordeon__datos mb-0">
+                <div>
+                  <dt>Cobertura rural de acueducto (2024)</dt>
+                  <dd>
+                    {% if fila.evaluacion.rural is not none %}
+                    {{ fila.evaluacion.rural_porcentaje_texto }} %
+                    {% else %}Sin evaluar{% endif %}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Recurrencia histórica de desabastecimiento (IDEAM ENA 2022)</dt>
+                  <dd>
+                    {% if fila.recurrencia.nivel %}{{ fila.recurrencia.texto }}
+                    {% else %}Sin clasificación documentada{% endif %}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Riesgo actual de desabastecimiento</dt>
+                  <dd>{{ nivel_riesgo(m.nivel_riesgo) }}</dd>
+                </div>
+              </dl>
+              {% if fila.recurrencia.nivel %}
+              <p class="small text-muted mt-3 mb-2">Dato histórico del ENA 2022; no es una alerta vigente.</p>
+              {% endif %}
+              <a class="small d-inline-block mt-3" href="{{ url_for('municipios.ficha', slug=m.slug) }}">Ver ficha municipal</a>
+            </div>
+          </div>
         </article>
       </div>
       {% endfor %}
     </div>
+    <section class="mt-4" aria-labelledby="titulo-comparacion-cobertura">
+      <h2 class="h5" id="titulo-comparacion-cobertura">Comparación de cobertura de acueducto (2024)</h2>
+      <p class="small text-muted">
+        La prioridad se calcula con umbrales académicos propuestos y no es una clasificación oficial.
+        Los colores del mapa siguen representando el nivel de riesgo registrado, no esta prioridad.
+      </p>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle bg-white comparacion-cobertura">
+          <thead>
+            <tr>
+              <th scope="col">Municipio</th>
+              <th scope="col">Cobertura urbana</th>
+              <th scope="col">Cobertura rural</th>
+              <th scope="col">Prioridad de atención</th>
+              <th scope="col">Ficha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fila in municipios_comparacion %}
+            <tr class="fila-comparacion-cobertura" data-prioridad="{{ fila.evaluacion.prioridad or 'sin-evaluar' }}">
+              <th scope="row">{{ fila.municipio.nombre }}</th>
+              <td>
+                {% if fila.evaluacion.urbana is not none %}{{ fila.evaluacion.urbana_porcentaje_texto }} %{% else %}Sin evaluar{% endif %}
+              </td>
+              <td>
+                {% if fila.evaluacion.rural is not none %}{{ fila.evaluacion.rural_porcentaje_texto }} %{% else %}Sin evaluar{% endif %}
+              </td>
+              <td>
+                <span class="cobertura-prioridad cobertura-prioridad--{{ fila.evaluacion.prioridad or 'sin-evaluar' }}">
+                  {{ fila.evaluacion.prioridad_texto }}
+                </span>
+              </td>
+              <td><a href="{{ url_for('municipios.ficha', slug=fila.municipio.slug) }}">Ver ficha</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
     {% else %}
     <p class="mb-0">No se encontraron municipios con esa búsqueda.</p>
     {% endif %}
@@ -72,4 +164,5 @@
 {% block scripts_extra %}
 <script src="{{ url_for('static', filename='vendor/leaflet/leaflet.js') }}"></script>
 <script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
+<script src="{{ url_for('static', filename='js/municipios.js') }}"></script>
 {% endblock %}

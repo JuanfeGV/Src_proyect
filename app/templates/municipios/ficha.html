@@ -15,7 +15,7 @@
 <section class="tarjeta-agua mb-4">
   <div class="tarjeta-agua-encabezado">{{ municipio.nombre }}</div>
   <div class="p-4">
-    <p class="mb-2">Nivel de riesgo: {{ nivel_riesgo(municipio.nivel_riesgo) }}</p>
+    <p class="mb-2">Riesgo de desabastecimiento: {{ nivel_riesgo(municipio.nivel_riesgo) }}</p>
     {% if municipio.estado_suministro %}
     <p><strong>Estado del suministro:</strong> {{ municipio.estado_suministro }}</p>
     {% endif %}
@@ -32,7 +32,7 @@
             <td>{{ i.nombre }}</td>
             <td>{{ i.valor }}{% if i.unidad %} {{ i.unidad }}{% endif %}</td>
             <td>{{ i.periodo or '—' }}</td>
-            <td>{{ i.fuente or '—' }}</td>
+            <td>{% if i.fuente %}{{ i.fuente|enlaces }}{% else %}—{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -46,6 +46,82 @@
     <h2 class="h5 mt-4">Recomendaciones locales</h2>
     {{ municipio.recomendaciones|parrafos }}
     {% endif %}
+  </div>
+</section>
+
+<section class="tarjeta-agua mb-4" aria-labelledby="titulo-evaluacion-cobertura">
+  <div class="tarjeta-agua-encabezado" id="titulo-evaluacion-cobertura">
+    Evaluación de cobertura de acueducto
+  </div>
+  <div class="p-4">
+    <p class="small text-muted">Año de medición: {{ evaluacion_cobertura.periodo }}</p>
+    <div class="row g-3">
+      <div class="col-md-6 col-xl-3">
+        <article class="cobertura-tarjeta">
+          <h3>Cobertura urbana</h3>
+          {% if evaluacion_cobertura.urbana is not none %}
+          <span class="cobertura-valor">{{ evaluacion_cobertura.urbana_texto }} %</span>
+          <div class="progress cobertura-progreso cobertura-progreso--urbana"
+               role="progressbar" aria-label="Cobertura urbana de acueducto"
+               aria-valuemin="0" aria-valuemax="100"
+               aria-valuenow="{{ evaluacion_cobertura.urbana }}">
+            <div class="progress-bar" style="width: {{ evaluacion_cobertura.urbana }}%"></div>
+          </div>
+          {% else %}
+          <span class="cobertura-valor">Sin evaluar</span>
+          {% endif %}
+        </article>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <article class="cobertura-tarjeta">
+          <h3>Cobertura rural</h3>
+          {% if evaluacion_cobertura.rural is not none %}
+          <span class="cobertura-valor">{{ evaluacion_cobertura.rural_texto }} %</span>
+          <div class="progress cobertura-progreso cobertura-progreso--rural"
+               role="progressbar" aria-label="Cobertura rural de acueducto"
+               aria-valuemin="0" aria-valuemax="100"
+               aria-valuenow="{{ evaluacion_cobertura.rural }}">
+            <div class="progress-bar" style="width: {{ evaluacion_cobertura.rural }}%"></div>
+          </div>
+          {% else %}
+          <span class="cobertura-valor">Sin evaluar</span>
+          {% endif %}
+        </article>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <article class="cobertura-tarjeta">
+          <h3>Diferencia urbana-rural</h3>
+          {% if evaluacion_cobertura.diferencia is not none %}
+          <span class="cobertura-valor">{{ evaluacion_cobertura.diferencia_texto }} pp</span>
+          <p class="small text-muted mb-0">Cobertura urbana menos cobertura rural.</p>
+          {% else %}
+          <span class="cobertura-valor">Sin evaluar</span>
+          <p class="small text-muted mb-0">Se requieren ambos valores válidos.</p>
+          {% endif %}
+        </article>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <article class="cobertura-tarjeta">
+          <h3>Prioridad por cobertura rural</h3>
+          <span class="cobertura-prioridad cobertura-prioridad--{{ evaluacion_cobertura.prioridad or 'sin-evaluar' }}">
+            {{ evaluacion_cobertura.prioridad_texto }}
+          </span>
+        </article>
+      </div>
+    </div>
+    <p class="mt-3 mb-2">{{ evaluacion_cobertura.interpretacion }}</p>
+    <p class="cobertura-metodologia small mb-2">
+      Metodología académica propuesta: prioridad alta si la cobertura rural es menor al 80 %,
+      media desde 80 % y menor al 95 %, y baja desde 95 %. No es una clasificación oficial de
+      Superservicios ni representa riesgo de desabastecimiento; ese indicador se muestra por separado.
+      Los colores de estas etiquetas identifican prioridad de cobertura, no el riesgo del mapa.
+    </p>
+    <p class="small mb-0">
+      <strong>Fuente oficial:</strong>
+      <a href="{{ evaluacion_cobertura.fuente_url }}" target="_blank" rel="noopener noreferrer">
+        Anexo 1 de Superservicios (2024)
+      </a>
+    </p>
   </div>
 </section>
 

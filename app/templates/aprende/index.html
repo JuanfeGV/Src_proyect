@@ -1,19 +1,11 @@
 {% extends "base.html" %}
-{% from "components/arbol.html" import arbol_problema %}
+{% from "components/arbol.html" import arbol_problema with context %}
 {% from "components/insignias.html" import nivel_riesgo %}
 {% from "components/tarjetas.html" import tarjeta_guia with context %}
 
 {% block titulo %}Aprende{% endblock %}
 
 {% block contenido %}
-<section class="tarjeta-agua mb-4" id="arbol">
-  <div class="tarjeta-agua-encabezado">Árbol del problema hídrico</div>
-  <div class="p-4">
-    <p class="small">Toca cualquier recuadro para ver su descripción y la fuente.</p>
-    {{ arbol_problema(arbol) }}
-  </div>
-</section>
-
 <section class="tarjeta-agua" id="guias">
   <div class="tarjeta-agua-encabezado">Guías de consumo responsable</div>
   <div class="p-4">
@@ -60,6 +52,14 @@
     {% else %}
     <p class="mb-0">No hay guías publicadas para esta selección.</p>
     {% endif %}
+  </div>
+</section>
+
+<section class="tarjeta-agua mt-4" id="arbol">
+  <div class="tarjeta-agua-encabezado">Árbol del problema hídrico</div>
+  <div class="p-4">
+    <p class="small">Selecciona un nodo para consultar su descripción y fuente oficial. Puedes expandir las ramas indirectas.</p>
+    {{ arbol_problema(arbol) }}
   </div>
 </section>
 {% endblock %}

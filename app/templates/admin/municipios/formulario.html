@@ -42,7 +42,7 @@
           <td class="fw-semibold">{{ i.nombre }}</td>
           <td>{{ i.valor }}{% if i.unidad %} {{ i.unidad }}{% endif %}</td>
           <td>{{ i.periodo or "—" }}</td>
-          <td>{{ i.fuente or "—" }}</td>
+          <td>{% if i.fuente %}{{ i.fuente|enlaces }}{% else %}—{% endif %}</td>
           <td class="text-end text-nowrap">
             <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.indicador_editar', indicador_id=i.id) }}">Editar</a>
             <form method="post" class="d-inline"

@@ -5,9 +5,11 @@
 {% if pag.pages > 1 %}
 <nav aria-label="Páginas">
   <ul class="pagination justify-content-center mb-0 mt-3">
-    <li class="page-item {{ 'disabled' if not pag.has_prev }}">
-      <a class="page-link" href="{{ url_for(endpoint, page=pag.prev_num, **extra) if pag.has_prev else '#' }}">Anterior</a>
-    </li>
+    {% if pag.has_prev %}
+    <li class="page-item"><a class="page-link" href="{{ url_for(endpoint, page=pag.prev_num, **extra) }}">Anterior</a></li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link" aria-disabled="true">Anterior</span></li>
+    {% endif %}
     {% for numero in pag.iter_pages() %}
       {% if numero %}
       <li class="page-item {{ 'active' if numero == pag.page }}">
@@ -17,9 +19,11 @@
       <li class="page-item disabled"><span class="page-link">…</span></li>
       {% endif %}
     {% endfor %}
-    <li class="page-item {{ 'disabled' if not pag.has_next }}">
-      <a class="page-link" href="{{ url_for(endpoint, page=pag.next_num, **extra) if pag.has_next else '#' }}">Siguiente</a>
-    </li>
+    {% if pag.has_next %}
+    <li class="page-item"><a class="page-link" href="{{ url_for(endpoint, page=pag.next_num, **extra) }}">Siguiente</a></li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link" aria-disabled="true">Siguiente</span></li>
+    {% endif %}
   </ul>
 </nav>
 {% endif %}

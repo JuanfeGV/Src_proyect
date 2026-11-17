@@ -42,7 +42,9 @@
         {% for a in resultados.articulos %}
         <li class="list-group-item">
           <a href="{{ url_for('noticias.detalle', slug=a.slug) }}">{{ a.titulo }}</a>
-          <span class="small text-muted d-block">{{ a.resumen or (a.contenido|truncate(120)) }}</span>
+          <span class="small text-muted d-block">
+            {% if a.resumen %}{{ a.resumen|enlaces }}{% else %}{{ a.contenido|truncate(120) }}{% endif %}
+          </span>
         </li>
         {% endfor %}
       </ul>
@@ -54,7 +56,9 @@
         {% for g in resultados.guias %}
         <li class="list-group-item">
           <a href="{{ url_for('aprende.guia', guia_id=g.id) }}">{{ g.titulo }}</a>
-          <span class="small text-muted d-block">{{ g.resumen or (g.contenido|truncate(120)) }}</span>
+          <span class="small text-muted d-block">
+            {% if g.resumen %}{{ g.resumen|enlaces }}{% else %}{{ g.contenido|truncate(120) }}{% endif %}
+          </span>
         </li>
         {% endfor %}
       </ul>

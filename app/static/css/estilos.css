@@ -17,6 +17,12 @@ body {
   flex-direction: column;
 }
 
+a:focus-visible {
+  outline: 3px solid #e0a800;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 main { flex: 1; }
 
 .barra-superior {
@@ -83,6 +89,7 @@ main { flex: 1; }
 .tarjeta-contenido-img { width: 100%; height: 150px; object-fit: cover; display: block; }
 .enlace-titulo { color: var(--azul-oscuro); text-decoration: none; }
 .enlace-titulo:hover { text-decoration: underline; }
+.enlace-titulo:focus-visible { text-decoration: underline; }
 
 .lista-municipios { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .chip-municipio {
@@ -99,32 +106,231 @@ main { flex: 1; }
 }
 .chip-municipio:hover { background: var(--azul); color: #fff; }
 
-/* Árbol del problema (versión con recuadros desplegables) */
-.arbol-etiqueta {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--azul-oscuro);
-  margin: 0.5rem 0;
-}
-.arbol-central { margin: 1rem 0; }
-.rama { display: flex; flex-direction: column; gap: 0.4rem; height: 100%; }
-.nodo {
+.cobertura-tarjeta {
+  height: 100%;
+  padding: 1rem;
+  border: 1px solid #d5e5ec;
+  border-radius: 12px;
   background: #fff;
-  border-left: 5px solid var(--azul);
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
 }
-.nodo summary { cursor: pointer; font-weight: 600; }
-.nodo-detalle { margin-top: 0.5rem; font-size: 0.85rem; }
-.nodo-fuente { color: #5b6b79; font-style: italic; }
-.nodo-central { background: var(--azul); color: #fff; border-left-color: var(--verde); font-size: 1rem; }
-.nodo-central .nodo-detalle, .nodo-central .nodo-fuente { color: #fff; }
-.nodo-directo { border-left-color: var(--verde); }
-.nodo-indirecto { border-left-color: #9ec9e8; margin-left: 0.75rem; }
-.rama-causa .nodo-directo { border-left-color: var(--verde-oscuro); }
-.nodo:target { outline: 3px solid var(--verde); }
+.cobertura-tarjeta h3 { color: var(--azul-oscuro); font-size: 0.95rem; }
+.cobertura-valor { display: block; margin-bottom: 0.65rem; color: var(--azul-oscuro); font-size: 1.4rem; font-weight: 750; }
+.cobertura-progreso { height: 0.65rem; border-radius: 999px; background: #e8eff3; }
+.cobertura-progreso--urbana .progress-bar { background: var(--azul); }
+.cobertura-progreso--rural .progress-bar { background: var(--verde); }
+.cobertura-prioridad {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.cobertura-prioridad--alta { background: #eee5f2; color: #68407c; }
+.cobertura-prioridad--media { background: #dceef4; color: #1c6273; }
+.cobertura-prioridad--baja { background: #e5ecef; color: #43535d; }
+.cobertura-prioridad--sin-evaluar { background: #edf1f3; color: #4b5a63; }
+.cobertura-metodologia {
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--verde);
+  border-radius: 6px;
+  background: #fff;
+}
+.comparacion-cobertura th { white-space: nowrap; }
+.comparacion-cobertura td { vertical-align: middle; }
+
+.municipio-acordeon__toggle {
+  display: flex;
+  width: 100%;
+  min-height: 4.25rem;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  border: 0;
+  background: #fff;
+  color: var(--azul-oscuro);
+  text-align: left;
+}
+.municipio-acordeon__toggle:hover { background: #f5fafc; }
+.municipio-acordeon__toggle:focus-visible {
+  outline: 3px solid rgba(20, 85, 138, 0.35);
+  outline-offset: -3px;
+}
+.municipio-acordeon__nombre { flex: 1 1 auto; }
+.municipio-acordeon__flecha {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: 0 0 auto;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 180ms ease;
+}
+.municipio-acordeon__toggle[aria-expanded="true"] .municipio-acordeon__flecha {
+  transform: rotate(225deg);
+}
+.municipio-acordeon__panel {
+  height: 0;
+  overflow: hidden;
+  transition: height 220ms ease;
+}
+.municipio-acordeon__panel[hidden] { display: none; }
+.municipio-acordeon__contenido {
+  padding: 0.9rem 1rem 1rem;
+  border-top: 1px solid #e6eef2;
+}
+.municipio-acordeon__datos { display: grid; gap: 0.75rem; }
+.municipio-acordeon__datos dt { color: #526a79; font-size: 0.82rem; font-weight: 600; }
+.municipio-acordeon__datos dd { margin: 0.15rem 0 0; color: var(--azul-oscuro); }
+
+/* Árbol del problema */
+.arbol-componente { color: var(--texto); }
+.arbol-controles { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.arbol-control {
+  border: 1px solid #b6cbd8;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--azul-oscuro);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+}
+.arbol-control:hover { background: var(--celeste); }
+.arbol-control:focus-visible, .arbol-nodo:focus-visible {
+  outline: 3px solid #e8b94d;
+  outline-offset: 3px;
+}
+.arbol-advertencias {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #d59a28;
+  border-radius: 0.5rem;
+  background: #fff8e7;
+  color: #59451c;
+  font-size: 0.88rem;
+}
+.arbol-advertencias ul { margin: 0.35rem 0 0; padding-left: 1.25rem; }
+.arbol-advertencias li + li { margin-top: 0.2rem; }
+.arbol-diagrama {
+  overflow: hidden;
+  border: 1px solid #d8e6ed;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(31, 115, 183, 0.09) 1px, transparent 0) 0 0 / 18px 18px,
+    #f8fbfd;
+}
+.arbol-lienzo { position: relative; }
+.arbol-conectores { position: absolute; inset: 0; z-index: 0; overflow: visible; pointer-events: none; }
+.arbol-conector {
+  fill: none;
+  stroke: #8da7b7;
+  stroke-width: 2;
+  opacity: 0.72;
+  transition: stroke-width 160ms ease, opacity 160ms ease;
+  vector-effect: non-scaling-stroke;
+}
+.arbol-conector--efecto { stroke: var(--azul); }
+.arbol-conector--causa { stroke: var(--verde-oscuro); }
+.arbol-conector.is-highlighted { stroke-width: 4; opacity: 1; }
+.arbol-capas {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  padding: 1.25rem;
+}
+.arbol-capa { min-width: 0; }
+.arbol-etiqueta {
+  margin: 0 0 0.55rem;
+  color: #526a79;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+.arbol-nodos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.arbol-nodos > li { min-width: 0; }
+.arbol-capa--central .arbol-nodos { grid-template-columns: minmax(0, min(100%, 42rem)); justify-content: center; }
+.arbol-nodo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: 100%;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid #c8dbe5;
+  border-left: 5px solid var(--azul);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 3px 9px rgba(20, 85, 138, 0.09);
+  color: var(--texto);
+  text-align: left;
+  font: inherit;
+  transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
+  overflow-wrap: anywhere;
+}
+.arbol-nodo:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(20, 85, 138, 0.15); }
+.arbol-nodo--efecto { border-left-color: var(--azul); background: #f5faff; }
+.arbol-nodo--causa { border-left-color: var(--verde-oscuro); background: #f5fbf7; }
+.arbol-nodo--central {
+  align-items: center;
+  min-height: 7rem;
+  border: 2px solid var(--verde);
+  background: linear-gradient(135deg, var(--azul-oscuro), var(--azul));
+  box-shadow: 0 7px 18px rgba(20, 85, 138, 0.22);
+  color: #fff;
+}
+.arbol-nodo--central .arbol-nodo-tipo { color: #d3f0df; }
+.arbol-nodo.is-selected {
+  border-color: #d39a21;
+  box-shadow: 0 0 0 3px rgba(211, 154, 33, 0.28), 0 6px 16px rgba(20, 85, 138, 0.15);
+}
+.arbol-nodo-icono {
+  display: inline-grid;
+  flex: 0 0 1.75rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #dcecf6;
+  color: var(--azul-oscuro);
+  font-weight: 800;
+}
+.arbol-nodo--causa .arbol-nodo-icono { background: #dff1e6; color: var(--verde-oscuro); }
+.arbol-nodo--central .arbol-nodo-icono { background: rgba(255, 255, 255, 0.16); color: #fff; }
+.arbol-nodo-contenido { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.arbol-nodo-tipo { color: #526a79; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.arbol-nodo-titulo { font-size: 0.91rem; font-weight: 650; line-height: 1.4; overflow-wrap: anywhere; }
+.arbol-nodo--central .arbol-nodo-titulo { font-size: clamp(1rem, 2vw, 1.2rem); }
+.arbol-detalle {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid #d4e4eb;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(20, 85, 138, 0.07);
+}
+.arbol-detalle h3 { margin: 0 0 0.5rem; color: var(--azul-oscuro); font-size: 1rem; }
+.arbol-detalle-descripcion { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.arbol-fuente { margin: 0.7rem 0 0; color: #526a79; font-size: 0.88rem; font-style: italic; overflow-wrap: anywhere; }
+.arbol-fuente:empty { display: none; }
+.arbol-vacio { padding: 1rem; border-radius: 10px; background: #fff; }
+@media (max-width: 575.98px) {
+  .arbol-capas { gap: 1rem; padding: 0.8rem; }
+  .arbol-nodos { grid-template-columns: minmax(0, 1fr); }
+  .arbol-capa--central .arbol-nodos { grid-template-columns: minmax(0, 1fr); }
+  .arbol-nodo { padding: 0.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arbol-nodo, .arbol-conector { transition: none; }
+}
 
 
 /* ---------- Fase 5a: mapa de municipios ---------- */
@@ -155,6 +361,28 @@ main { flex: 1; }
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }
 .leyenda-mapa > div { display: flex; align-items: center; }
+.leyenda-mapa .leyenda-mapa-titulo {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--azul-oscuro);
+  font-weight: 700;
+}
+.mapa .leaflet-control.leyenda-mapa--indicador { pointer-events: none; }
+.mapa-selector {
+  max-width: min(17rem, calc(100vw - 4.5rem));
+  padding: 0.55rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+}
+.mapa-selector label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--azul-oscuro);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.mapa-selector select { min-width: 15rem; }
 .leyenda-color {
   display: inline-block;
   width: 0.8rem;
@@ -172,4 +400,11 @@ main { flex: 1; }
   border-radius: 50%;
   margin-right: 0.4rem;
   flex: 0 0 auto;
+}
+@media (max-width: 575.98px) {
+  .mapa-selector select { min-width: 0; max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .municipio-acordeon__flecha,
+  .municipio-acordeon__panel { transition: none; }
 }

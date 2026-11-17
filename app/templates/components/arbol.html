@@ -1,48 +1,96 @@
-{# Árbol del problema. Cada recuadro con descripción o fuente se despliega al tocarlo
-   (usa <details>, sin JavaScript). La versión interactiva avanzada es de la Fase 5. #}
-{% macro nodo(n, clase="") %}
-  {% if n.descripcion or n.fuente %}
-  <details class="nodo {{ clase }}" id="nodo-{{ n.id }}">
-    <summary>{{ n.titulo }}</summary>
-    <div class="nodo-detalle">
-      {% if n.descripcion %}{{ n.descripcion|parrafos }}{% endif %}
-      {% if n.fuente %}<p class="nodo-fuente mb-0">Fuente: {{ n.fuente }}</p>{% endif %}
-    </div>
-  </details>
-  {% else %}
-  <div class="nodo {{ clase }}" id="nodo-{{ n.id }}"><span class="nodo-titulo">{{ n.titulo }}</span></div>
-  {% endif %}
-{% endmacro %}
+{% macro clase_nodo(tipo) -%}
+  {%- if tipo in ("efecto_directo", "efecto_indirecto") -%}arbol-nodo--efecto
+  {%- elif tipo in ("causa_directa", "causa_indirecta") -%}arbol-nodo--causa
+  {%- elif tipo == "problema_central" -%}arbol-nodo--central
+  {%- else -%}arbol-nodo--otro
+  {%- endif -%}
+{%- endmacro %}
 
-{% macro rama(directo, indirectos, tipo) %}
-  <div class="rama rama-{{ tipo }}">
-    {{ nodo(directo, "nodo-directo") }}
-    {% for hijo in indirectos %}
-      {{ nodo(hijo, "nodo-indirecto") }}
-    {% endfor %}
-  </div>
+{% macro nodo(n) %}
+<li>
+  <button type="button" class="arbol-nodo {{ clase_nodo(n.tipo) }}"
+          id="nodo-{{ n.id }}" data-node-id="{{ n.id }}"
+          data-parent-id="{{ n.padre_id if n.padre_id is not none else '' }}"
+          data-type="{{ n.tipo }}" data-description="{{ n.descripcion or '' }}"
+          data-source="{{ n.fuente or '' }}" aria-pressed="false"
+          aria-controls="arbol-detalle" aria-describedby="arbol-instruccion">
+    <span class="arbol-nodo-icono" aria-hidden="true">
+      {% if n.tipo in ("efecto_directo", "efecto_indirecto") %}↑
+      {% elif n.tipo in ("causa_directa", "causa_indirecta") %}↓
+      {% else %}•{% endif %}
+    </span>
+    <span class="arbol-nodo-contenido">
+      <span class="arbol-nodo-tipo">{{ ETIQUETAS_TIPO_NODO.get(n.tipo, "Sin clasificar") }}</span>
+      <span class="arbol-nodo-titulo">{{ n.titulo }}</span>
+    </span>
+  </button>
+</li>
 {% endmacro %}
 
 {% macro arbol_problema(arbol) %}
-  {% if not arbol.central %}
-  <p class="mb-0">El árbol del problema todavía no ha sido cargado.</p>
+  {% if not arbol.nodos %}
+  <p class="arbol-vacio" role="status">El árbol del problema todavía no ha sido cargado.</p>
   {% else %}
-  <div class="arbol">
-    <h3 class="arbol-etiqueta">Efectos</h3>
-    <div class="row g-3">
-      {% for directo, indirectos in arbol.efectos %}
-      <div class="col-md-6">{{ rama(directo, indirectos, "efecto") }}</div>
-      {% endfor %}
+  <div class="arbol-componente">
+    <p class="visually-hidden" id="arbol-instruccion">
+      Selecciona un nodo para consultar su descripción y fuente. Usa Tab y Enter o Espacio para navegar.
+    </p>
+
+    <div class="arbol-controles" aria-label="Controles para expandir ramas">
+      <button type="button" class="arbol-control" data-target-layer="efecto-indirecto"
+              data-label="efectos indirectos" aria-controls="efecto-indirecto"
+              aria-expanded="false" {% if not arbol.capas[0].nodos %}disabled{% endif %}>
+        Expandir efectos indirectos
+      </button>
+      <button type="button" class="arbol-control" data-target-layer="causa-indirecta"
+              data-label="causas indirectas" aria-controls="causa-indirecta"
+              aria-expanded="false" {% if not arbol.capas[4].nodos %}disabled{% endif %}>
+        Expandir causas indirectas
+      </button>
     </div>
 
-    <div class="arbol-central">{{ nodo(arbol.central, "nodo-central") }}</div>
-
-    <h3 class="arbol-etiqueta">Causas</h3>
-    <div class="row g-3">
-      {% for directo, indirectos in arbol.causas %}
-      <div class="col-md-4">{{ rama(directo, indirectos, "causa") }}</div>
-      {% endfor %}
+    {% if arbol.advertencias %}
+    <div class="arbol-advertencias" role="status">
+      <strong>Revisa la estructura cargada:</strong>
+      <ul>
+        {% for advertencia in arbol.advertencias %}<li>{{ advertencia }}</li>{% endfor %}
+      </ul>
     </div>
+    {% endif %}
+
+    <div class="arbol-diagrama" aria-label="Diagrama de causas y efectos">
+      <div class="arbol-lienzo">
+        <svg class="arbol-conectores" aria-hidden="true" focusable="false">
+          {% for enlace in arbol.enlaces %}
+          <path class="arbol-conector{% if enlace.tipo.startswith('efecto_') %} arbol-conector--efecto{% elif enlace.tipo.startswith('causa_') %} arbol-conector--causa{% endif %}"
+                data-parent-id="{{ enlace.padre_id }}" data-child-id="{{ enlace.hijo_id }}"></path>
+          {% endfor %}
+        </svg>
+        <div class="arbol-capas">
+          {% for capa in arbol.capas %}
+          {% if capa.nodos %}
+          <section class="arbol-capa{% if capa.tipo == 'problema_central' %} arbol-capa--central{% endif %}"
+                   id="{{ capa.id }}"
+                   aria-label="{{ capa.titulo }}"
+                   {% if capa.tipo in ("efecto_indirecto", "causa_indirecta") %}hidden{% endif %}>
+            <h3 class="arbol-etiqueta">{{ capa.titulo }}</h3>
+            <ul class="arbol-nodos">
+              {% for n in capa.nodos %}{{ nodo(n) }}{% endfor %}
+            </ul>
+          </section>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <section class="arbol-detalle" id="arbol-detalle" aria-live="polite" aria-atomic="true">
+      <h3 id="arbol-detalle-titulo">Detalle del nodo</h3>
+      <p class="arbol-detalle-descripcion" id="arbol-detalle-descripcion">
+        Selecciona un nodo del diagrama para consultar su información.
+      </p>
+      <p class="arbol-fuente" id="arbol-detalle-fuente"></p>
+    </section>
   </div>
   {% endif %}
 {% endmacro %}

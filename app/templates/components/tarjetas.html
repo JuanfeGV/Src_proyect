@@ -14,7 +14,9 @@
       {% if a.municipio %}<span class="badge text-bg-light border">{{ a.municipio.nombre }}</span>{% endif %}
     </p>
     <h3 class="h6 mb-1"><a class="enlace-titulo" href="{{ url_for('noticias.detalle', slug=a.slug) }}">{{ a.titulo }}</a></h3>
-    <p class="small mb-1">{{ a.resumen or (a.contenido|truncate(140)) }}</p>
+    <p class="small mb-1">
+      {% if a.resumen %}{{ a.resumen|enlaces }}{% else %}{{ a.contenido|truncate(140) }}{% endif %}
+    </p>
     {% if a.fecha_publicacion %}<p class="small text-muted mb-0">{{ a.fecha_publicacion|fecha }}</p>{% endif %}
   </div>
 </article>
@@ -34,7 +36,9 @@
       {% endif %}
     </p>
     <h3 class="h6 mb-1"><a class="enlace-titulo" href="{{ url_for('aprende.guia', guia_id=g.id) }}">{{ g.titulo }}</a></h3>
-    <p class="small mb-0">{{ g.resumen or (g.contenido|truncate(140)) }}</p>
+    <p class="small mb-0">
+      {% if g.resumen %}{{ g.resumen|enlaces }}{% else %}{{ g.contenido|truncate(140) }}{% endif %}
+    </p>
   </div>
 </article>
 {% endmacro %}

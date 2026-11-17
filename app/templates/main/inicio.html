@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-{% from "components/arbol.html" import arbol_problema %}
 {% from "components/mapa.html" import mapa_municipios %}
-{% from "components/insignias.html" import nivel_riesgo %}
 {% from "components/tarjetas.html" import tarjeta_articulo with context %}
 
 {% block titulo %}Inicio{% endblock %}
@@ -17,9 +15,10 @@
       <div class="tarjeta-agua-encabezado">Crisis hídrica: causas y conciencia</div>
       <div class="p-4">
         <h1 class="h4">Árbol del problema hídrico</h1>
-        <p class="small">Toca cualquier recuadro para ver su descripción y la fuente.</p>
-        {{ arbol_problema(arbol) }}
-        <p class="mt-3 mb-0"><a class="btn btn-agua" href="{{ url_for('aprende.index') }}">Aprende a cuidar el agua</a></p>
+        <p>Consulta el diagrama interactivo, sus causas, efectos y fuentes oficiales en Aprende.</p>
+        <p class="mt-3 mb-0">
+          <a class="btn btn-agua" href="{{ url_for('aprende.index', _anchor='arbol') }}">Ver árbol del problema</a>
+        </p>
       </div>
     </section>
   </div>
@@ -47,10 +46,14 @@
         </form>
         {% if municipios %}
         <ul class="lista-municipios list-unstyled mb-0">
-          {% for m in municipios %}
+          {% for fila in municipios_inicio %}
+          {% set m = fila.municipio %}
           <li>
             <a class="chip-municipio" href="{{ url_for('municipios.ficha', slug=m.slug) }}">
-              <span>{{ m.nombre }}</span> {{ nivel_riesgo(m.nivel_riesgo) }}
+              <span>{{ m.nombre }}</span>
+              <span class="cobertura-prioridad cobertura-prioridad--{{ fila.evaluacion.prioridad or 'sin-evaluar' }}">
+                Prioridad {{ fila.evaluacion.prioridad_texto|lower }}
+              </span>
             </a>
           </li>
           {% endfor %}
@@ -60,7 +63,7 @@
         {% endif %}
       </div>
       <div class="col-lg-7">
-        {{ mapa_municipios(puntos_mapa) }}
+        {{ mapa_municipios(puntos_mapa, selector_indicador=true) }}
       </div>
     </div>
   </div>
@@ -86,5 +89,4 @@
 {% block scripts_extra %}
 <script src="{{ url_for('static', filename='vendor/leaflet/leaflet.js') }}"></script>
 <script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
-<script src="{{ url_for('static', filename='js/arbol.js') }}"></script>
 {% endblock %}
