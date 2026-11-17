@@ -3,11 +3,14 @@
 Las páginas públicas nunca muestran borradores: los artículos deben estar
 publicados y las guías deben estar marcadas como publicadas.
 """
+import math
+
 from flask import url_for
 
 from ..models import Articulo, GuiaConsumo, Municipio, NodoArbol
 from ..models.constantes import NIVELES_RIESGO
 from ..utils.texto import normalizar
+from .semilla import MUNICIPIOS
 
 LARGO_MAXIMO_BUSQUEDA = 100
 LARGO_MINIMO_BUSQUEDA = 2
@@ -79,18 +82,55 @@ def estructura_arbol():
     }
 
 
-def datos_mapa(municipios):
-    """Datos mínimos de cada municipio para dibujarlo en el mapa (solo los que tienen coordenadas)."""
-    return [
-        {
-            "nombre": m.nombre,
-            "slug": m.slug,
-            "lat": m.latitud,
-            "lng": m.longitud,
-            "nivel": m.nivel_riesgo if m.nivel_riesgo in NIVELES_RIESGO else None,
-            "suministro": m.estado_suministro,
-            "url": url_for("municipios.ficha", slug=m.slug),
-        }
-        for m in municipios
-        if m.latitud is not None and m.longitud is not None
-    ]
+def _coordenadas_validas(latitud, longitud):
+    try:
+        latitud = float(latitud)
+        longitud = float(longitud)
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+    if not (
+        math.isfinite(latitud)
+        and math.isfinite(longitud)
+        and -90 <= latitud <= 90
+        and -180 <= longitud <= 180
+    ):
+        return None
+    return latitud, longitud
+
+
+_COORDENADAS_SEMILLA = {
+    nombre: (latitud, longitud) for nombre, latitud, longitud in MUNICIPIOS
+}
+
+
+def datos_mapa(municipios, municipio_seleccionado=None):
+    """Prepara ubicaciones válidas y usa coordenadas semilla solo si faltan en la BD."""
+    puntos = []
+    for municipio in municipios:
+        if municipio.latitud is None or municipio.longitud is None:
+            coordenadas = _COORDENADAS_SEMILLA.get(municipio.nombre)
+        else:
+            coordenadas = _coordenadas_validas(municipio.latitud, municipio.longitud)
+
+        if coordenadas is None:
+            continue
+
+        latitud, longitud = coordenadas
+        puntos.append(
+            {
+                "nombre": municipio.nombre,
+                "slug": municipio.slug,
+                "lat": latitud,
+                "lng": longitud,
+                "nivel": municipio.nivel_riesgo if municipio.nivel_riesgo in NIVELES_RIESGO else None,
+                "suministro": municipio.estado_suministro,
+                "resumen": municipio.resumen,
+                "seleccionado": (
+                    municipio_seleccionado is not None
+                    and municipio.id == municipio_seleccionado.id
+                ),
+                "url": url_for("municipios.ficha", slug=municipio.slug),
+            }
+        )
+    return puntos

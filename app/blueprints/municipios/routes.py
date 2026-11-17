@@ -38,7 +38,7 @@ def index():
         municipios=municipios,
         municipios_disponibles=municipios_disponibles,
         municipio_seleccionado=municipio_seleccionado,
-        puntos_mapa=datos_mapa(municipios),
+        puntos_mapa=datos_mapa(municipios, municipio_seleccionado=municipio_seleccionado),
         q=q,
         nivel=nivel,
     )
@@ -56,5 +56,5 @@ def ficha(slug):
         evaluado=evaluado,
         guias=guias,
         noticias=noticias,
-        puntos_mapa=datos_mapa([municipio]),
+        puntos_mapa=datos_mapa([municipio], municipio_seleccionado=municipio),
     )

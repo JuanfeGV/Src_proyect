@@ -137,7 +137,16 @@ main { flex: 1; }
   background: #cfe6f5;
 }
 @media (max-width: 575.98px) { .mapa { height: 300px; } }
-.mapa-aviso { color: var(--azul-oscuro); }
+.mapa-aviso {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 1000;
+  color: var(--azul-oscuro);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+}
 .leyenda-mapa {
   background: #fff;
   border-radius: 8px;
@@ -145,6 +154,7 @@ main { flex: 1; }
   font-size: 0.8rem;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }
+.leyenda-mapa > div { display: flex; align-items: center; }
 .leyenda-color {
   display: inline-block;
   width: 0.8rem;
@@ -152,4 +162,14 @@ main { flex: 1; }
   border-radius: 50%;
   margin-right: 0.4rem;
   vertical-align: middle;
+  flex: 0 0 auto;
+}
+.leyenda-seleccionado {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 3px solid var(--azul-oscuro);
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  flex: 0 0 auto;
 }
